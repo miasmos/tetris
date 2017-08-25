@@ -1,0 +1,48 @@
+{
+	"game": {
+		"width": 800,
+		"height": 600,
+		"grid": {
+			"width": 10,
+			"height": 20
+		},
+		"blockSize": 16
+	},
+	"shapes": {
+		"I": {
+			"width": 4,
+			"height": 1,
+			"color": "#10e5c4"
+		},
+		"J": {
+			"width": 3,
+			"height": 2,
+			"color": "#103de5"
+		},
+		"L": {
+			"width": 3,
+			"height": 2,
+			"color": "#e5ce10"
+		},
+		"O": {
+			"width": 2,
+			"height": 2,
+			"color": "#dde510"
+		},
+		"S": {
+			"width": 3,
+			"height": 2,
+			"color": "#29e510"
+		},
+		"T": {
+			"width": 3,
+			"height": 2,
+			"color": "#ce10e5"
+		},
+		"Z": {
+			"width": 3,
+			"height": 2,
+			"color": "#e51010"
+		}
+	}
+}
