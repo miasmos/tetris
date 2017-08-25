@@ -5,7 +5,13 @@ var webpack = require('webpack'),
      test: [/\.js$/, /\.es6$/],
      exclude: /node_modules/,
      loader: WebpackStripLoader.loader('console.log')
-    }
+    },
+    HtmlWebpackPlugin = require('html-webpack-plugin'),
+    HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
+        template: __dirname + '/app/index.html',
+        filename: 'index.html',
+        inject: 'body'
+    })
 
 module.exports = {
   entry: [
@@ -20,6 +26,15 @@ module.exports = {
   },
   module: {
     loaders: [
+    {
+        test: /\.js$/,
+        exclude: [/node_modules/],
+        include: [path.resolve(__dirname, 'app')],
+        loader: "babel-loader",
+        query: {
+            presets: ['es2015', 'stage-0']
+        }
+      },
       {
         test: /\.jpg|.jpeg|.png|.gif|.svg$/,
         loader: "file?name=images/[name].[ext]"
@@ -32,17 +47,9 @@ module.exports = {
         test: /\.json$/,
         loader: 'json-loader'
       }
-    ],
-    sassLoader: {
-      includePaths: [path.resolve(__dirname, "./app/index.scss")]
-    }
+    ]
   },
   plugins: [
-    new webpack.DefinePlugin({
-        'process.env': {
-            'NODE_ENV': JSON.stringify('production')
-        }
-    })
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin({
@@ -59,5 +66,6 @@ module.exports = {
           }
       }
     }),
+    HTMLWebpackPluginConfig
   ]
 };

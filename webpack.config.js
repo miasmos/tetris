@@ -1,5 +1,11 @@
 var webpack = require('webpack'),
-    path = require('path')
+    path = require('path'),
+    HtmlWebpackPlugin = require('html-webpack-plugin'),
+    HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
+        template: __dirname + '/app/index.html',
+        filename: 'index.html',
+        inject: 'body'
+    })
 
 module.exports = {
   entry: [
@@ -15,6 +21,15 @@ module.exports = {
   module: {
     devtool: "source-map", // or "inline-source-map"
     loaders: [
+    	{
+        test: /\.js$/,
+        exclude: [/node_modules/],
+        include: [path.resolve(__dirname, 'app')],
+        loader: "babel-loader",
+        query: {
+            presets: ['es2015', 'stage-0']
+        }
+      },
       {
         test: /\.jpg|.jpeg|.png|.gif|.svg$/,
         loader: "file?name=images/[name].[ext]"
@@ -30,11 +45,6 @@ module.exports = {
     ]
   },
   plugins: [
-    ProvidePlugin,
-    new webpack.DefinePlugin({
-        'process.env': {
-            'NODE_ENV': JSON.stringify('development')
-        }
-    })
+  	HTMLWebpackPluginConfig
   ]
 }
