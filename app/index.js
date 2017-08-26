@@ -2,7 +2,8 @@ import 'phaser-shim'
 import { Game } from './js/Game'
 import Tetrimino from './js/GameObjects/Tetrimino'
 import DebugGrid from './js/GameObjects/DebugGrid'
-const config = require('./config.json')
+const config = require('./config.json'),
+	Enum = require('./enum.json')
 
 const game = new Game(config.game.width, config.game.height)
 

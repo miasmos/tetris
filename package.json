@@ -25,7 +25,8 @@
     "phaser": "^2.6.2",
     "phaser-shim": "^2.4.8",
     "script-loader": "^0.7.0",
-    "store": "^2.0.12"
+    "store": "^2.0.12",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
