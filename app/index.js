@@ -1,16 +1,24 @@
-const PIXI = require('pixi'),
-	p2 = require('p2'),
-	Phaser = require('phaser'),
-	config = require('./config.json')
-	game = new Phaser.Game(config.game.width, config.game.height, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+import 'phaser-shim'
+import { Game } from './js/Game'
+import Tetrimino from './js/GameObjects/Tetrimino'
+import DebugGrid from './js/GameObjects/DebugGrid'
+const config = require('./config.json')
 
-function preload() {
-	// game.load.image('polygon', require('./assets/polygon.png'))
-}
+const game = new Game(config.game.width, config.game.height)
 
-function create() {
-	game.add.sprite(0, 0, '')
-}
+game.OnCreate(PhaserGame => {
+	PhaserGame.add.existing(new DebugGrid())
 
-function update() {
-}
+	PhaserGame.add.existing(new Tetrimino(config.tetriminos.I))
+	PhaserGame.add.existing(new Tetrimino(config.tetriminos.J, 64))
+	PhaserGame.add.existing(new Tetrimino(config.tetriminos.L, 128))
+	PhaserGame.add.existing(new Tetrimino(config.tetriminos.O, 192))
+	PhaserGame.add.existing(new Tetrimino(config.tetriminos.S, 256))
+	PhaserGame.add.existing(new Tetrimino(config.tetriminos.T, 320))
+	PhaserGame.add.existing(new Tetrimino(config.tetriminos.Z, 384))
+})
+
+game.OnPreload(PhaserGame => {
+
+})
+game.Start()

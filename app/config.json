@@ -8,41 +8,34 @@
 		},
 		"blockSize": 16
 	},
-	"shapes": {
+	"tetriminos": {
 		"I": {
-			"width": 4,
-			"height": 1,
-			"color": "#10e5c4"
+			"color": "0x10e5c4",
+			"matrix": [1, 1, 1, 1, 0, 0, 0, 0]
 		},
 		"J": {
-			"width": 3,
-			"height": 2,
-			"color": "#103de5"
+			"color": "0x103de5",
+			"matrix": [1, 1, 1, 0, 0, 0, 1, 0]
 		},
 		"L": {
-			"width": 3,
-			"height": 2,
-			"color": "#e5ce10"
+			"color": "0xe5ce10",
+			"matrix": [1, 1, 1, 0, 1, 0, 0, 0]
 		},
 		"O": {
-			"width": 2,
-			"height": 2,
-			"color": "#dde510"
+			"color": "0xdde510",
+			"matrix": [1, 1, 0, 0, 1, 1, 0, 0]
 		},
 		"S": {
-			"width": 3,
-			"height": 2,
-			"color": "#29e510"
+			"color": "0x29e510",
+			"matrix": [0, 1, 1, 0, 1, 1, 0, 0]
 		},
 		"T": {
-			"width": 3,
-			"height": 2,
-			"color": "#ce10e5"
+			"color": "0xce10e5",
+			"matrix": [1, 1, 1, 0, 0, 1, 0, 0]
 		},
 		"Z": {
-			"width": 3,
-			"height": 2,
-			"color": "#e51010"
+			"color": "0xe51010",
+			"matrix": [1, 1, 0, 0, 0, 1, 1, 0]
 		}
 	}
 }

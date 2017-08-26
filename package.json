@@ -23,6 +23,8 @@
     "bluebird": "^3.5.0",
     "lodash": "^4.17.4",
     "phaser": "^2.6.2",
+    "phaser-shim": "^2.4.8",
+    "script-loader": "^0.7.0",
     "store": "^2.0.12"
   },
   "devDependencies": {
