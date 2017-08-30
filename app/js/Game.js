@@ -8,6 +8,7 @@ class Game {
 		if (!instance) {
 			this.width = width
 			this.height = height
+			this.time = new Phaser.Time()
 			this.on = {
 				create: [],
 				preload: [],
@@ -84,40 +85,40 @@ class Game {
 	}
 
 	_update() {
-		for (let priority in this.on.update) {
-			if (Enum.PRIORITY.URGENT in this.on.update) {
-				for (let index in this.on.update[Enum.PRIORITY.URGENT]) {
-					const entry = this.on.update[Enum.PRIORITY.URGENT][index]
-					if (typeof entry.fn === 'function') {
-						entry.fn.call(this, PhaserGame)
-					}
+		console.log(this.time.elapsed)
+		// this.tick += 
+		if (Enum.PRIORITY.URGENT in this.on.update) {
+			for (let index in this.on.update[Enum.PRIORITY.URGENT]) {
+				const entry = this.on.update[Enum.PRIORITY.URGENT][index]
+				if (typeof entry.fn === 'function') {
+					entry.fn.call(this, PhaserGame)
 				}
 			}
+		}
 
-			if (Enum.PRIORITY.HIGH in this.on.update) {
-				for (let index in this.on.update[Enum.PRIORITY.HIGH]) {
-					const entry = this.on.update[Enum.PRIORITY.HIGH][index]
-					if (typeof entry.fn === 'function') {
-						entry.fn.call(this, PhaserGame)
-					}
+		if (Enum.PRIORITY.HIGH in this.on.update) {
+			for (let index in this.on.update[Enum.PRIORITY.HIGH]) {
+				const entry = this.on.update[Enum.PRIORITY.HIGH][index]
+				if (typeof entry.fn === 'function') {
+					entry.fn.call(this, PhaserGame)
 				}
 			}
+		}
 
-			if (Enum.PRIORITY.MEDIUM in this.on.update) {
-				for (let index in this.on.update[Enum.PRIORITY.MEDIUM]) {
-					const entry = this.on.update[Enum.PRIORITY.MEDIUM][index]
-					if (typeof entry.fn === 'function') {
-						entry.fn.call(this, PhaserGame)
-					}
+		if (Enum.PRIORITY.MEDIUM in this.on.update) {
+			for (let index in this.on.update[Enum.PRIORITY.MEDIUM]) {
+				const entry = this.on.update[Enum.PRIORITY.MEDIUM][index]
+				if (typeof entry.fn === 'function') {
+					entry.fn.call(this, PhaserGame)
 				}
 			}
+		}
 
-			if (Enum.PRIORITY.LOW in this.on.update) {
-				for (let index in this.on.update[Enum.PRIORITY.LOW]) {
-					const entry = this.on.update[Enum.PRIORITY.LOW][index]
-					if (typeof entry.fn === 'function') {
-						entry.fn.call(this, PhaserGame)
-					}
+		if (Enum.PRIORITY.LOW in this.on.update) {
+			for (let index in this.on.update[Enum.PRIORITY.LOW]) {
+				const entry = this.on.update[Enum.PRIORITY.LOW][index]
+				if (typeof entry.fn === 'function') {
+					entry.fn.call(this, PhaserGame)
 				}
 			}
 		}

@@ -4,7 +4,7 @@ import { PhaserGame } from '../Game'
 const config = require('../../config.json')
 
 export default class Tetrimino extends Phaser.Group {
-	constructor(type, x = 0, y = 0) {
+	constructor(type, _x = 0, _y = 0) {
 		super(PhaserGame)
 		this.color = type.color
 
@@ -26,10 +26,11 @@ export default class Tetrimino extends Phaser.Group {
 				this.add(block)
 			}
 		}
+
 		this.width = maxX + config.game.blockSize
 		this.height = maxY + config.game.blockSize
-		this.x = x
-		this.y = y
+		this.x = _x
+		this.y = _y
 		console.log(this)
 	}
 }
