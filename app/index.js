@@ -3,7 +3,7 @@ import { Game } from './js/Game'
 import Tetrimino from './js/Tetrimino'
 import DebugGrid from './js/GameObjects/DebugGrid'
 import TetriminoFactory from './js/TetriminoFactory'
-import Grid from './js/Grid'
+import Grid from './js/GameObjects/Grid'
 import { Matrix } from './js/Util'
 
 const config = require('./config.json'),
