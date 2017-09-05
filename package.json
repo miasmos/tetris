@@ -22,6 +22,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "lodash": "^4.17.4",
+    "mathjs": "^3.16.3",
     "phaser": "^2.6.2",
     "phaser-shim": "^2.4.8",
     "script-loader": "^0.7.0",

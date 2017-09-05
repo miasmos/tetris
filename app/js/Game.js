@@ -85,8 +85,6 @@ class Game {
 	}
 
 	_update() {
-		console.log(this.time.elapsed)
-		// this.tick += 
 		if (Enum.PRIORITY.URGENT in this.on.update) {
 			for (let index in this.on.update[Enum.PRIORITY.URGENT]) {
 				const entry = this.on.update[Enum.PRIORITY.URGENT][index]

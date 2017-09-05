@@ -1,4 +1,5 @@
 import 'phaser-shim'
+import math from 'mathjs'
 import { PhaserGame } from './Game'
 const config = require('../config.json')
 
@@ -29,14 +30,7 @@ export default class Grid extends Phaser.Group {
 		this.width = gridWidth
 		this.height = gridHeight
 
-		this.matrix = []
-		for (var i = 0; i < config.game.grid.height; i++) {
-			let arr = []
-			for (var j = 0; j < config.game.grid.width; j++) {
-				arr.push(0)
-			}
-			this.matrix.push(arr)
-		}
-		console.log(this.matrix)
+		this.matrix = math.zeros(config.game.grid.height, config.game.grid.width, 'sparse')
+		// console.log(this.matrix.toString())
 	}
 }

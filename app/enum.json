@@ -4,5 +4,26 @@
 		"MEDIUM": 1,
 		"HIGH": 2,
 		"URGENT": 3
+	},
+	"GAME": {
+		"STATE": {
+			"IDLE": 0,
+			"PLACING": 1
+		},
+		"DIRECTION": {
+			"NORTH": 0,
+			"EAST": 1,
+			"SOUTH": 2,
+			"WEST": 3
+		},
+		"TETRIMINO": {
+			"I": "I",
+			"J": "J",
+			"L": "L",
+			"O": "O",
+			"S": "S",
+			"T": "T",
+			"Z": "Z"
+		}
 	}
 }

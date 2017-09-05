@@ -2,40 +2,74 @@
 	"game": {
 		"width": 800,
 		"height": 600,
+		"blockSize": 20,
 		"grid": {
 			"width": 10,
 			"height": 20
-		},
-		"blockSize": 20
+		}
 	},
-	"tetriminos": {
+	"tetrimino": {
 		"I": {
+			"index": 0,
+			"name": "I",
 			"color": "0x10e5c4",
-			"matrix": [1, 1, 1, 1, 0, 0, 0, 0]
+			"matrix": [
+				[1, 1, 1, 1]
+			]
 		},
 		"J": {
+			"index": 1,
+			"name": "J",
 			"color": "0x103de5",
-			"matrix": [1, 1, 1, 0, 0, 0, 1, 0]
+			"matrix": [
+				[1, 1, 1],
+				[0, 0, 1]
+			]
 		},
 		"L": {
+			"index": 2,
+			"name": "L",
 			"color": "0xe5ce10",
-			"matrix": [1, 1, 1, 0, 1, 0, 0, 0]
+			"matrix": [
+				[1, 1, 1],
+				[1, 0, 0]
+			]
 		},
 		"O": {
+			"index": 3,
+			"name": "O",
 			"color": "0xdde510",
-			"matrix": [1, 1, 0, 0, 1, 1, 0, 0]
+			"matrix": [
+				[1, 1],
+				[1, 1]
+			]
 		},
 		"S": {
+			"index": 4,
+			"name": "S",
 			"color": "0x29e510",
-			"matrix": [0, 1, 1, 0, 1, 1, 0, 0]
+			"matrix": [
+				[0, 1, 1],
+				[1, 1, 0]
+			]
 		},
 		"T": {
+			"index": 5,
+			"name": "T",
 			"color": "0xce10e5",
-			"matrix": [1, 1, 1, 0, 0, 1, 0, 0]
+			"matrix": [
+				[1, 1, 1],
+				[0, 1, 0]
+			]
 		},
 		"Z": {
+			"index": 6,
+			"name": "Z",
 			"color": "0xe51010",
-			"matrix": [1, 1, 0, 0, 0, 1, 1, 0]
+			"matrix": [
+				[1, 1, 0],
+				[0, 1, 1]
+			]
 		}
 	}
 }
