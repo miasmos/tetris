@@ -1,8 +1,9 @@
 import 'phaser-shim'
+import Block from './GameObjects/Block'
 import { PhaserGame } from './Game'
 const config = require('../config.json')
 
-export default class BlockFactory {
+class _BlockFactory {
 	constructor() {
 		this.textures = {}
 		for (let index in config.tetrimino) {
@@ -28,3 +29,5 @@ export default class BlockFactory {
 		return block
 	}
 }
+const BlockFactory = new _BlockFactory()
+export default BlockFactory

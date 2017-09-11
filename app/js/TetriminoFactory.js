@@ -1,13 +1,13 @@
-import Tetrimino from './Tetrimino'
-import { Matrix } from './Util'
-import math from 'mathjs'
+import Tetrimino from './GameObjects/Tetrimino'
+import Util from './Util'
+import Matrix from './Matrix'
 const config = require('../config.json'),
 	Enum = require('../enum.json')
 
 class _TetriminoFactory {
 	constructor() {
 		this.min = 0
-		this.max = Object.keys(config.tetrimino).length
+		this.max = Object.keys(config.tetrimino).length - 1
 
 		this.matrices = {}
 		for (let index in config.tetrimino) {	//cache all tetrimino orientations
@@ -22,12 +22,16 @@ class _TetriminoFactory {
 			directions = {}
 
 		for (let index in Enum.GAME.DIRECTION) {	//generate matrices for each orientation of the tetrimino
-			let direction = Enum.GAME.DIRECTION[index]
+			let direction = Enum.GAME.DIRECTION[index],
+				matrix
+
 			if (direction === Enum.GAME.DIRECTION.NORTH) {
-				directions[direction] = math.matrix(defaultMatrix, 'sparse')
+				matrix = new Matrix(defaultMatrix)
 			} else {
-				directions[direction] = Matrix.rotate(directions[direction - 1])
+				matrix = new Matrix(Util.Matrix.rotate(directions[direction - 1]))
 			}
+
+			directions[direction] = matrix
 		}
 
 		return directions
@@ -35,7 +39,7 @@ class _TetriminoFactory {
 
 	Get(type) {
 		if (typeof type === 'undefined') {
-			const index = math.randomInt(this.min, this.max)
+			const index = Util.Math.randomInt(this.min, this.max)
 			type = Object.keys(config.tetrimino)[index]
 		}
 

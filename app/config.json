@@ -3,6 +3,7 @@
 		"width": 800,
 		"height": 600,
 		"blockSize": 20,
+		"dropInterval": 200,
 		"grid": {
 			"width": 10,
 			"height": 20

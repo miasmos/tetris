@@ -1,8 +1,9 @@
-import math from 'mathjs'
+const _ = require('lodash'),
+	Enum = require('../enum.json')
 
-export class Matrix {
+class Matrix {
 	static rotate(matrix) {	//[[1, 1, 1], [0, 1, 0]]
-		let source = matrix.toArray(),
+		let source = matrix._data,
 			rows = source.length,
 			destination = []
 
@@ -19,11 +20,121 @@ export class Matrix {
 			}
 		}
 
-		return math.matrix(destination, 'sparse') //[[], []]
+		return destination
 	}
 
-	static log(_matrix) {
-		const matrix = _matrix.toArray()
+	static generate(width, height, fill=0) {
+		let arr = [], arr1
+		for (let index = 0; index <= height; index++) {
+			arr1 = []
+			for (let index1 = 0; index1 <= width; index1++) {
+				arr1.push(fill)
+			}
+			arr.push(arr1)
+		}
+		return arr
+	}
+
+	static intersect(source, destination, x = 0, y = 0) {
+		source = source._data
+		destination = destination._data
+
+		if (y >= destination.length) {
+			return false
+		}
+		let sX = -1, sY = -1
+		for (let dY = y; dY < y + source.length; dY++) {
+			sY++
+			if (x >= destination[dY].length) {
+				return false
+			}
+			for (let dX = x; dX < x + source[sY].length; dX++) {
+				sX++
+				// console.log(x, y, dX, dY, sX, sY, source[sY][sX], destination[dY][dX])
+				if (!!source[sY][sX] && !!destination[dY][dX]) {
+					return true
+				}
+			}
+			sX = -1
+		}
+		return false
+	}
+
+	static edge(matrix, edge = Enum.GAME.DIRECTION.SOUTH) {
+		if (typeof edge === 'undefined') {
+			return matrix
+		}
+		let { width, height } = matrix
+		let x, y, width2, height2
+
+		switch(edge) {
+			case Enum.GAME.DIRECTION.EAST:
+				x = width - 1
+				y = 0
+				width2 = 1
+				height2 = height
+				break
+			case Enum.GAME.DIRECTION.SOUTH:
+				x = 0
+				y = height - 1
+				width2 = width
+				height2 = 1
+				break
+			case Enum.GAME.DIRECTION.WEST:
+				x = 0
+				y = 0
+				width2 = 1
+				height2 = height - 1
+				break
+			case Enum.GAME.DIRECTION.NORTH:
+				x = 0
+				y = 0
+				width2 = width - 1
+				height2 = 1
+				break
+		}
+
+		return Matrix.subset(matrix, x, y, width2, height2)
+	}
+
+	static subset(matrix, x, y, width, height) {
+		let arr = [], arr1
+
+		for (let index = y; index < matrix._data.length; index++) {
+			arr1 = []
+			for (let index1 = x; index1 < matrix._data[index].length; index1++) {
+				arr1.push(matrix._data[index][index1])
+			}
+			arr.push(arr1)
+		}
+
+		return arr
+	}
+
+	static join(source, destination, x = 0, y = 0) {
+		source = source._data
+		destination = destination._data
+
+		let curX = -1, curY = -1, clone = _.clone(destination)
+		for (let index = y; index < destination.length; index++) {
+			curX = -1
+
+			if (++curY > source.length - 1) {
+				break
+			}
+
+			for (let index1 = x; index1 < destination[index].length; index1++) {
+				if (++curX > source[curY].length - 1) {
+					break
+				}
+
+				clone[index][index1] = source[curY][curX]
+			}
+		}
+		return clone
+	}
+
+	static log(matrix) {
 		let str = ''
 		for (let index in matrix) {
 			for (let index1 in matrix[index]) {
@@ -34,3 +145,53 @@ export class Matrix {
 		console.log(str + '\n')
 	}
 }
+
+class _Math {
+	static range(lo, hi) {
+		let arr = []
+		for (let index = lo; index < hi; index++) {
+			arr.push(index)
+		}
+		return arr
+	}
+
+	static randomInt(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min
+	}
+}
+
+class _Benchmark {
+	constructor() {
+		this.cache = {}
+	}
+
+	run(fn) {
+		if (typeof fn === 'function') {
+			let start = Date.now()
+
+			fn.call()
+			this.log(fn.name, Date.now() - start)
+		}
+	}
+
+	start(name) {
+		if (!(name in this.cache)) {
+			this.cache[name] = Date.now()
+		}
+	}
+
+	end(name) {
+		if (name in this.cache) {
+			this.log(name, Date.now() - this.cache[name])
+			delete this.cache[name]
+		}
+	}
+
+	log(name, ms) {
+		console.log(`${name} completed execution in ${ms}ms.`)
+	}
+}
+const Benchmark = new _Benchmark()
+
+const Util = { Matrix, Math: _Math, Benchmark }
+export default Util

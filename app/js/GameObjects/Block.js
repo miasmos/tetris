@@ -4,10 +4,13 @@ const config = require('../../config.json')
 
 export default class Block extends Phaser.Sprite {
 	constructor(texture) {
-		super(texture)
+		super(PhaserGame)
+		this.texture = texture
 		this.exists = false //hide by default
 		this.x = 0
 		this.y = 0
+		this.height = config.game.blockSize
+		this.width = config.game.blockSize
 	}
 
 	SetPosition(x, y) {
