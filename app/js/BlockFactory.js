@@ -6,9 +6,9 @@ const config = require('../config.json')
 class _BlockFactory {
 	constructor() {
 		this.textures = {}
-		for (let index in config.tetrimino) {
-			const tetriminoData = config.tetrimino[index],
-				color = tetriminoData.color
+		for (let index in config.tetromino) {
+			const tetrominoData = config.tetromino[index],
+				color = tetrominoData.color
 
 			const graphic = new Phaser.Graphics(PhaserGame)
 			graphic.beginFill(color, 1)

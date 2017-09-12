@@ -14,9 +14,9 @@
 	"GAME": {
 		"STATE": {
 			"IDLE": 0,
-			"SPAWN_TETRIMINO": 1,
-			"PLACING_TETRIMINO": 2,
-			"TETRIMINO_COLLIDED": 3,
+			"SPAWN_TETROMINO": 1,
+			"PLACING_TETROMINO": 2,
+			"TETROMINO_COLLIDED": 3,
 			"LINE_CLEARED": 4,
 			"WIN": 98,
 			"LOSE": 99,
@@ -32,7 +32,7 @@
 			"CW": 0,
 			"CCW": 1
 		},
-		"TETRIMINO": {
+		"TETROMINO": {
 			"I": "I",
 			"J": "J",
 			"L": "L",

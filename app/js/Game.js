@@ -1,14 +1,12 @@
 import 'phaser-shim'
-import Observer from './Observer'
 const Enum = require('../enum.json'),
 	config = require('../config.json'),
 	uuid = require('uuid/v4')
 
 let PhaserGame, instance
-class Game extends Observer {
+class Game {
 	constructor(width, height) {
 		if (!instance) {
-			super()
 			this.width = width
 			this.height = height
 			this.dropEvent = undefined
@@ -27,7 +25,6 @@ class Game extends Observer {
 	SetState(state) {
 		if (Object.values(Enum.GAME.STATE).indexOf(state) > -1) {
 			this.state = state
-			this.emit('STATE', state)
 		}
 	}
 

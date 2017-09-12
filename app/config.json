@@ -2,14 +2,27 @@
 	"game": {
 		"width": 800,
 		"height": 600,
+		"borderSize": 2,
 		"blockSize": 20,
+		"color": {
+			"primary": "f9f9f9",
+			"background": "000000"
+		},
 		"dropInterval": 1000,
+		"points": {
+			"drop": 1,
+			"line": 100,
+			"double": 300,
+			"triple": 500,
+			"quad": 800,
+			"consecutiveQuad": 1200
+		},
 		"grid": {
 			"width": 10,
 			"height": 20
 		}
 	},
-	"tetrimino": {
+	"tetromino": {
 		"I": {
 			"index": 0,
 			"name": "I",

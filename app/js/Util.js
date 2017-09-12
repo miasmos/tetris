@@ -23,26 +23,32 @@ class Matrix {
 		return destination
 	}
 
+	static highestNonEmptyRow(matrix) {
+		matrix = matrix.data
+		for (let index = 0; index < matrix.length - 1; index++) {
+			const empty = matrix[index].filter(value => {return value !== 0})
+			if (empty.length) {
+				return index
+			}
+		}
+	}
+
 	static generate(width, height, fill=0) {
 		let arr = []
-		for (let index = 0; index <= height; index++) {
+		for (let index = 0; index < height; index++) {
 			arr.push(_.fill(Array(width), fill))
 		}
-		console.log(arr)
 		return arr
 	}
 
 	static removeRow(matrix, index) {
 		let width = matrix.width
 		matrix = _.clone(matrix.data)
-		let arr = [], arr1
 
-		matrix.splice(index, 1)
 		for (let index1 = index; index1 > 0; index1--) {
 			matrix[index1] = matrix[index1 - 1]
 		}
-		matrix.splice(0, 0, _.fill(Array(width), 0))
-		console.log(matrix)
+		matrix[0] = _.fill(Array(width), 0)
 		return matrix
 	}
 
@@ -171,6 +177,16 @@ class _Math {
 	}
 }
 
+class Color {
+	static Hex(value) {
+		return `0x${value}`
+	}
+
+	static CSSHex(value) {
+		return `#${value}`
+	}
+}
+
 class _Benchmark {
 	constructor() {
 		this.cache = {}
@@ -204,5 +220,5 @@ class _Benchmark {
 }
 const Benchmark = new _Benchmark()
 
-const Util = { Matrix, Math: _Math, Benchmark }
+const Util = { Color, Matrix, Math: _Math, Benchmark }
 export default Util

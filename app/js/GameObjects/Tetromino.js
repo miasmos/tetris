@@ -5,9 +5,9 @@ import Util from '../Util'
 const config = require('../../config.json'),
 	Enum = require('../../enum.json')
 
-export default class Tetrimino {
+export default class Tetromino {
 	constructor(type) {
-		const data = config.tetrimino[type]
+		const data = config.tetromino[type]
 		this.color = data.color
 		this.index = data.index
 		this.name = data.name
@@ -75,12 +75,13 @@ export default class Tetrimino {
 				if (!!this.matrix.data[index][index1]) {
 					const block = BlockFactory.Get(this.color)
 					block.active = true
-					block.SetPosition(curX, curY)
-					this.group.add(block)
+					block.x = curX
+					block.y = curY
+					this.group.add(block.sprite)
 				}
-				curX += config.game.blockSize
+				curX++
 			}
-			curY += config.game.blockSize
+			curY++
 			curX = 0
 		}
 	}

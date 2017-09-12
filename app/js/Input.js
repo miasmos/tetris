@@ -4,33 +4,12 @@ import { PhaserGame } from './Game'
 export default class Input {
 	constructor() {
 		this.keyboard = PhaserGame.input.keyboard
-		this.keyboard.onDownCallback = this.OnDown.bind(this)
-		this.keyboard.onPressCallback = this.OnPress.bind(this)
-		this.keyboard.onUpCallback = this.OnUp.bind(this)
+		this.keyboard.onDownCallback = this._onDown.bind(this)
+		this.keyboard.onPressCallback = this._onPress.bind(this)
+		this.keyboard.onUpCallback = this._onUp.bind(this)
 
 		this.cache = []
-	}
-
-	CacheKey(keyCode) {
-		if (!this.isBuffered(keyCode)) {
-			this.cache.push(keyCode)
-		}
-	}
-
-	ReleaseKey(keyCode) {
-		if (this.isBuffered(keyCode)) {
-			this.cache.splice(this.cache.indexOf(keyCode), 1)
-		}
-	}
-
-	OnUp(event) {
-		this.ReleaseKey(event.keyCode)
-	}
-
-	OnPress(event) {
-	}
-
-	OnDown(event) {
+		this.timeout = {}
 	}
 
 	isDown(keyCode) {
@@ -41,7 +20,42 @@ export default class Input {
 		return this.cache.indexOf(keyCode) > -1
 	}
 
-	buffer(keyCode) {
-		this.CacheKey(keyCode)
+	buffer(keyCode, timeout) {
+		this._cacheKey(keyCode, timeout)
+	}
+
+	_cacheKey(keyCode, timeout) {
+		if (!this.isBuffered(keyCode)) {
+			this.cache.push(keyCode)
+
+			if (typeof timeout === 'number') {
+				this.timeout[keyCode] = setTimeout(() => {
+					this._releaseKey(keyCode)
+				}, timeout)
+			}
+		}
+	}
+
+	_releaseKey(keyCode) {
+		if (this.isBuffered(keyCode)) {
+			this.cache.splice(this.cache.indexOf(keyCode), 1)
+		}
+		if (keyCode in this.timeout) {
+			clearTimeout(this.timeout[keyCode])
+			this.timeout[keyCode] = undefined
+			delete this.timeout[keyCode]
+		}
+	}
+
+	_onUp(event) {
+		if (!(event.keyCode in this.timeout)) {
+			this._releaseKey(event.keyCode)
+		}
+	}
+
+	_onPress(event) {
+	}
+
+	_onDown(event) {
 	}
 }

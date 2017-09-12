@@ -42,8 +42,8 @@ export default class Matrix {
 
 	getNonEmptyRows() {
 		let arr = []
-		for (let index = 0; index < this._data.length; index++) {
-			if (this._data[index].indexOf(0) === -1) arr.push(index)
+		for (let index = 0; index < this.data.length; index++) {
+			if (this.data[index].indexOf(0) === -1) arr.push(index)
 		}
 		return arr
 	}
