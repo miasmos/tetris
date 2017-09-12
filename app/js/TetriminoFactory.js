@@ -25,7 +25,7 @@ class _TetriminoFactory {
 			let direction = Enum.GAME.DIRECTION[index],
 				matrix
 
-			if (direction === Enum.GAME.DIRECTION.NORTH) {
+			if (direction === Enum.GAME.DIRECTION.UP) {
 				matrix = new Matrix(defaultMatrix)
 			} else {
 				matrix = new Matrix(Util.Matrix.rotate(directions[direction - 1]))
@@ -45,7 +45,7 @@ class _TetriminoFactory {
 
 		let tetrimino = new Tetrimino(type)
 		tetrimino.matrices = this.matrices[type]
-		tetrimino.matrix = tetrimino.matrices[Enum.GAME.DIRECTION.NORTH]
+		tetrimino.matrix = tetrimino.matrices[Enum.GAME.DIRECTION.UP]
 		return tetrimino
 	}
 }

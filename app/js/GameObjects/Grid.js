@@ -33,6 +33,7 @@ export default class Grid extends Phaser.Group {
 		this.y = gridY
 		this.width = gridWidth
 		this.height = gridHeight
+		this.clearing = false
 
 		this.matrix = new Matrix(Util.Matrix.generate(config.game.grid.width - 1, config.game.grid.height - 1))
 
@@ -56,7 +57,7 @@ export default class Grid extends Phaser.Group {
 	}
 
 	SpawnTetrimino() {
-		let tetrimino = TetriminoFactory.Get(),
+		let tetrimino = TetriminoFactory.Get(Enum.GAME.TETRIMINO.I),
 			x = Math.floor(config.game.grid.width / 2 - tetrimino.matrix.width / 2),
 			y = 0
 
@@ -86,7 +87,7 @@ export default class Grid extends Phaser.Group {
 		}
 	}
 
-	TetriminoWillCollide(direction = Enum.GAME.DIRECTION.SOUTH) {
+	TetriminoWillCollide(direction = Enum.GAME.DIRECTION.DOWN) {
 		let tetrimino = this.gameObjects.tetrimino,
 			local = {
 				x: tetrimino.x,
@@ -94,21 +95,21 @@ export default class Grid extends Phaser.Group {
 			}
 
 		switch(direction) {
-			case Enum.GAME.DIRECTION.EAST:
+			case Enum.GAME.DIRECTION.RIGHT:
 				local.x += 1
 				break
-			case Enum.GAME.DIRECTION.SOUTH:
+			case Enum.GAME.DIRECTION.DOWN:
 				local.y += 1
 				break
-			case Enum.GAME.DIRECTION.WEST:
+			case Enum.GAME.DIRECTION.LEFT:
 				local.x -= 1
 				break
-			case Enum.GAME.DIRECTION.NORTH:
+			case Enum.GAME.DIRECTION.UP:
 				local.x -= 1
 				break
 		}
 
-		return this.HitTest(local.x, local.y, tetrimino, direction)
+		return this.HitTest(local.x, local.y, tetrimino)
 	}
 
 	HitTest(x, y, tetrimino, direction) {		//TODO: cache tetrimino edges for each orientation
@@ -122,16 +123,16 @@ export default class Grid extends Phaser.Group {
 		let tetriminoMatrix
 
 		switch(direction) {
-			case Enum.GAME.DIRECTION.EAST:
+			case Enum.GAME.DIRECTION.RIGHT:
 				x += tetrimino.matrix.width - 1
 				tetriminoMatrix = new Matrix(Util.Matrix.edge(tetrimino.matrix, direction))
 				break
-			case Enum.GAME.DIRECTION.SOUTH:
+			case Enum.GAME.DIRECTION.DOWN:
 				y += tetrimino.matrix.height - 1
 				tetriminoMatrix = new Matrix(Util.Matrix.edge(tetrimino.matrix, direction))
 				break
-			case Enum.GAME.DIRECTION.WEST:
-			case Enum.GAME.DIRECTION.NORTH:
+			case Enum.GAME.DIRECTION.LEFT:
+			case Enum.GAME.DIRECTION.UP:
 				tetriminoMatrix = new Matrix(Util.Matrix.edge(tetrimino.matrix, direction))
 				break
 			default:
@@ -153,8 +154,7 @@ export default class Grid extends Phaser.Group {
 			}
 
 		this.matrix.overwrite(Util.Matrix.join(tetrimino.matrix, this.matrix, local.x, local.y))
-		this.matrix.log()
-
+this.matrix.log()
 		for (let index in tetrimino.matrix.data) {
 			for (let index1 in tetrimino.matrix.data[index]) {
 				world = {
@@ -175,6 +175,43 @@ export default class Grid extends Phaser.Group {
 		this.gameObjects.tetrimino = undefined
 	}
 
+	LineCleared() {
+		return !!this.matrix.getNonEmptyRows().length
+	}
+
+	ClearLines(callback) {
+		if (this.clearing) return
+		this.clearing = true
+		let clearedRows = this.matrix.getNonEmptyRows()
+
+		let cnt = 0,
+			interval = setInterval(() => {
+				clearedRows.map((value, index) => this.ToggleRow(value))
+				if (++cnt >= 5) {
+					clearInterval(interval)
+					eraseLines.call(this, clearedRows)
+					callback.call()
+					this.clearing = false
+				}
+			}, 150)
+
+		function eraseLines(rows) {
+			for (let index in rows) {
+				const value = rows[index]
+				for (let index1 = 0; index1 < this.lookups.blocks.data[value].length - 1; index1++) {
+					this._ClearBlock(value, index1)
+				}
+				this.matrix.overwrite(Util.Matrix.removeRow(this.matrix, value))
+			}
+			//TODO: update rendered block positions to match updated matrix
+			this.matrix.log()
+		}
+	}
+
+	ToggleRow(index) {
+		this.lookups.blocks.data[index].map(value => value.active = !value.active)
+	}
+
 	_SpawnBlock(x, y, color, exists=true) {
 		if (!this.lookups.blocks.get(x, y)) {
 			const block = BlockFactory.Get(color),
@@ -193,7 +230,7 @@ export default class Grid extends Phaser.Group {
 	}
 
 	_ClearBlock(column, row) {
-		const block = this.lookups.blocks[column][row]
+		const block = this.lookups.blocks.data[column][row]
 		if (!!block) {
 			this.gameObjects.blockContainer.remove(block, true)
 			this.lookups.blocks.set(column, row, 0)

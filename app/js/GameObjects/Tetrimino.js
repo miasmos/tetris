@@ -19,7 +19,7 @@ export default class Tetrimino {
 		this.height = 0
 
 		this.matrices = {}
-		this.direction = Enum.GAME.DIRECTION.NORTH
+		this.direction = Enum.GAME.DIRECTION.UP
 	}
 
 	set gridX(value) {
@@ -101,7 +101,7 @@ export default class Tetrimino {
 	RotateCW() {
 		const keys = Object.keys(Enum.GAME.DIRECTION)
 		if (this.direction === keys.length - 1) {
-			this.direction = Enum.GAME.DIRECTION.NORTH
+			this.direction = Enum.GAME.DIRECTION.UP
 		} else {
 			this.direction = Enum.GAME.DIRECTION[keys[this.direction + 1]]
 		}

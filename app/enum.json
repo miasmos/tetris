@@ -17,15 +17,16 @@
 			"SPAWN_TETRIMINO": 1,
 			"PLACING_TETRIMINO": 2,
 			"TETRIMINO_COLLIDED": 3,
+			"LINE_CLEARED": 4,
 			"WIN": 98,
 			"LOSE": 99,
 			"PAUSE": 100
 		},
 		"DIRECTION": {
-			"NORTH": 0,
-			"EAST": 1,
-			"SOUTH": 2,
-			"WEST": 3
+			"UP": 0,
+			"RIGHT": 1,
+			"DOWN": 2,
+			"LEFT": 3
 		},
 		"SPIN": {
 			"CW": 0,

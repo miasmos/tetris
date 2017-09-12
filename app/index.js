@@ -25,6 +25,7 @@ game.OnCreate(PhaserGame => {
 })
 
 game.OnUpdate(PhaserGame => {
+	Util.Benchmark.start('update')
 	if (game.state === Enum.GAME.STATE.IDLE) {
 		const didPlace = grid.SpawnTetrimino()
 
@@ -37,22 +38,37 @@ game.OnUpdate(PhaserGame => {
 			console.log('loser')
 		}
 	} else if (game.state === Enum.GAME.STATE.PLACING_TETRIMINO) {
-		if (PhaserGame.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-			if (!grid.TetriminoWillCollide(Enum.GAME.DIRECTION.WEST)) {
+		if (!Keyboard.isBuffered(Phaser.Keyboard.LEFT) && Keyboard.isDown(Phaser.Keyboard.LEFT)) {
+			Keyboard.buffer(Phaser.Keyboard.LEFT)
+			if (!grid.TetriminoWillCollide(Enum.GAME.DIRECTION.LEFT)) {
 				grid.MoveTetrimino(-1, 0)
 			}
-		} else if (PhaserGame.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-			if (!grid.TetriminoWillCollide(Enum.GAME.DIRECTION.EAST)) {
+		} else if (!Keyboard.isBuffered(Phaser.Keyboard.RIGHT) && Keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+			Keyboard.buffer(Phaser.Keyboard.RIGHT)
+			if (!grid.TetriminoWillCollide(Enum.GAME.DIRECTION.RIGHT)) {
 				grid.MoveTetrimino(1, 0)
 			}
-		} else if (PhaserGame.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+		} else if (!Keyboard.isBuffered(Phaser.Keyboard.UP) && Keyboard.isDown(Phaser.Keyboard.UP)) {
+			Keyboard.buffer(Phaser.Keyboard.UP)
 			grid.SpinTetrimino()
+		} else if (!Keyboard.isBuffered(Phaser.Keyboard.DOWN) && Keyboard.isDown(Phaser.Keyboard.DOWN)) {
+			// Keyboard.buffer(Phaser.Keyboard.DOWN)
+			if (!grid.TetriminoWillCollide(Enum.GAME.DIRECTION.DOWN)) {
+				grid.MoveTetrimino(0, 1)
+			}
 		}
 	} else if (game.state === Enum.GAME.STATE.TETRIMINO_COLLIDED) {
 		grid.AddTetriminoToGrid()
-		game.SetState(Enum.GAME.STATE.IDLE)
-	}
 
+		if (grid.LineCleared()) {
+			game.SetState(Enum.GAME.STATE.LINE_CLEARED)
+		} else {
+			game.SetState(Enum.GAME.STATE.IDLE)
+		}
+	} else if (game.state === Enum.GAME.STATE.LINE_CLEARED) {
+		grid.ClearLines(() => {game.SetState(Enum.GAME.STATE.IDLE)})
+	}
+Util.Benchmark.end('update')
 	PhaserGame.debug.text(PhaserGame.time.fps || '--', 2, 14, "#00ff00")
 	PhaserGame.debug.text(game.state, 2, 34, "#00ff00")
 })

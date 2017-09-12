@@ -4,16 +4,44 @@ import { PhaserGame } from './Game'
 export default class Input {
 	constructor() {
 		this.keyboard = PhaserGame.input.keyboard
-		this.keyboard.onDownCallback = this.onDown
+		this.keyboard.onDownCallback = this.OnDown.bind(this)
+		this.keyboard.onPressCallback = this.OnPress.bind(this)
+		this.keyboard.onUpCallback = this.OnUp.bind(this)
+
+		this.cache = []
 	}
 
-	MovementKeyPressed() {
-		return this.keyboard.is(Phaser.Keyboard.LEFT) ||
-			this.keyboard.isDown(Phaser.Keyboard.RIGHT) ||
-			this.keyboard.isDown(Phaser.Keyboard.DOWN)
+	CacheKey(keyCode) {
+		if (!this.isBuffered(keyCode)) {
+			this.cache.push(keyCode)
+		}
+	}
+
+	ReleaseKey(keyCode) {
+		if (this.isBuffered(keyCode)) {
+			this.cache.splice(this.cache.indexOf(keyCode), 1)
+		}
+	}
+
+	OnUp(event) {
+		this.ReleaseKey(event.keyCode)
+	}
+
+	OnPress(event) {
 	}
 
 	OnDown(event) {
-		console.log(event)
+	}
+
+	isDown(keyCode) {
+		return this.keyboard.isDown(keyCode)
+	}
+
+	isBuffered(keyCode) {
+		return this.cache.indexOf(keyCode) > -1
+	}
+
+	buffer(keyCode) {
+		this.CacheKey(keyCode)
 	}
 }

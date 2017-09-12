@@ -18,13 +18,15 @@ export default class Matrix {
 	}
 
 	set(x, y, value) {
-		if (y > -1 && y < this.data.length - 1 && x > -1 && x < this.data[y].length - 1) {
+		if (y > -1 && y < this.data.length && x > -1 && x < this.data[y].length) {
 			this.data[y][x] = value
+			return true
 		}
+		return false
 	}
 
 	get(x, y) {
-		if (y > -1 && y < this.data.length - 1 && x > -1 && x < this.data[y].length - 1) {
+		if (y > -1 && y < this.data.length && x > -1 && x < this.data[y].length) {
 			return this.data[y][x]
 		}
 		return false
@@ -36,6 +38,14 @@ export default class Matrix {
 
 	log() {
 		Util.Matrix.log(this._data)
+	}
+
+	getNonEmptyRows() {
+		let arr = []
+		for (let index = 0; index < this._data.length; index++) {
+			if (this._data[index].indexOf(0) === -1) arr.push(index)
+		}
+		return arr
 	}
 
 	get data() {

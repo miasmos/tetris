@@ -3,7 +3,7 @@ const _ = require('lodash'),
 
 class Matrix {
 	static rotate(matrix) {	//[[1, 1, 1], [0, 1, 0]]
-		let source = matrix._data,
+		let source = matrix.data,
 			rows = source.length,
 			destination = []
 
@@ -24,20 +24,31 @@ class Matrix {
 	}
 
 	static generate(width, height, fill=0) {
-		let arr = [], arr1
+		let arr = []
 		for (let index = 0; index <= height; index++) {
-			arr1 = []
-			for (let index1 = 0; index1 <= width; index1++) {
-				arr1.push(fill)
-			}
-			arr.push(arr1)
+			arr.push(_.fill(Array(width), fill))
 		}
+		console.log(arr)
 		return arr
 	}
 
+	static removeRow(matrix, index) {
+		let width = matrix.width
+		matrix = _.clone(matrix.data)
+		let arr = [], arr1
+
+		matrix.splice(index, 1)
+		for (let index1 = index; index1 > 0; index1--) {
+			matrix[index1] = matrix[index1 - 1]
+		}
+		matrix.splice(0, 0, _.fill(Array(width), 0))
+		console.log(matrix)
+		return matrix
+	}
+
 	static intersect(source, destination, x = 0, y = 0) {
-		source = source._data
-		destination = destination._data
+		source = source.data
+		destination = destination.data
 
 		if (y >= destination.length) {
 			return false
@@ -60,7 +71,7 @@ class Matrix {
 		return false
 	}
 
-	static edge(matrix, edge = Enum.GAME.DIRECTION.SOUTH) {
+	static edge(matrix, edge = Enum.GAME.DIRECTION.DOWN) {
 		if (typeof edge === 'undefined') {
 			return matrix
 		}
@@ -68,25 +79,25 @@ class Matrix {
 		let x, y, width2, height2
 
 		switch(edge) {
-			case Enum.GAME.DIRECTION.EAST:
+			case Enum.GAME.DIRECTION.RIGHT:
 				x = width - 1
 				y = 0
 				width2 = 1
 				height2 = height
 				break
-			case Enum.GAME.DIRECTION.SOUTH:
+			case Enum.GAME.DIRECTION.DOWN:
 				x = 0
 				y = height - 1
 				width2 = width
 				height2 = 1
 				break
-			case Enum.GAME.DIRECTION.WEST:
+			case Enum.GAME.DIRECTION.LEFT:
 				x = 0
 				y = 0
 				width2 = 1
 				height2 = height - 1
 				break
-			case Enum.GAME.DIRECTION.NORTH:
+			case Enum.GAME.DIRECTION.UP:
 				x = 0
 				y = 0
 				width2 = width - 1
@@ -112,8 +123,8 @@ class Matrix {
 	}
 
 	static join(source, destination, x = 0, y = 0) {
-		source = source._data
-		destination = destination._data
+		source = source.data
+		destination = destination.data
 
 		let curX = -1, curY = -1, clone = _.clone(destination)
 		for (let index = y; index < destination.length; index++) {

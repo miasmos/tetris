@@ -11,36 +11,25 @@ var webpack = require('webpack'),
         template: __dirname + '/app/index.html',
         filename: 'index.html',
         inject: 'body'
-    }),
-    PHASER_DIR = path.join(__dirname, '/node_modules/phaser')
+    })
 
 module.exports = {
   entry: [
     './app/index.js'
   ],
+  output: {
+    path: path.join(__dirname, '/dist'),
+    filename: "index.js"
+  },
   loaders: [
     stripLoader
   ],
-  alias: {
-  	phaser: path.join(PHASER_DIR, 'build/custom/phaser-split.js'),
-      pixi: path.join(PHASER_DIR, 'build/custom/pixi.js'),
-      p2: path.join(PHASER_DIR, 'build/custom/p2.js'),
-  },
-  resolve: {
-    extensions: ['.js', '.jsx', '.json'],
-    modules: ['./src', 'node_modules'],
-    alias: {
-      phaser: path.join(PHASER_DIR, 'build/custom/phaser-split.js'),
-      pixi: path.join(PHASER_DIR, 'build/custom/pixi.js'),
-      p2: path.join(PHASER_DIR, 'build/custom/p2.js'),
-    },
-  },
-  output: {
-    path: __dirname + '/dist',
-    filename: "index.js"
-  },
   module: {
     loaders: [
+     {
+      loader: 'script',// script-loader
+      test: /(pixi|phaser).js/
+    },
     {
         test: /\.js$/,
         exclude: [/node_modules/],
@@ -51,29 +40,8 @@ module.exports = {
         }
       },
       {
-        test: /pixi\.js/,
-        use: [{
-          loader: 'expose-loader',
-          options: 'PIXI',
-        }],
-      },
-      {
-        test: /phaser-split\.js$/,
-        use: [{
-          loader: 'expose-loader',
-          options: 'Phaser',
-        }],
-      },
-      {
-        test: /p2\.js/,
-        use: [{
-          loader: 'expose-loader',
-          options: 'p2',
-        }],
-      },
-      {
         test: /\.jpg|.jpeg|.png|.gif|.svg$/,
-        loader: "file?name=images/[name].[ext]"
+        loader: "file?name=app/assets/[name].[ext]"
       },
       {
           test: /\.(eot|svg|ttf|woff|woff2)$/,
