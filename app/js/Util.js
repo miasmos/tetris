@@ -3,7 +3,7 @@ const _ = require('lodash'),
 
 class Matrix {
 	static rotate(matrix) {	//[[1, 1, 1], [0, 1, 0]]
-		let source = matrix.data,
+		let source = _.cloneDeep(matrix.data),
 			rows = source.length,
 			destination = []
 
@@ -43,7 +43,7 @@ class Matrix {
 
 	static removeRow(matrix, index) {
 		let width = matrix.width
-		matrix = _.clone(matrix.data)
+		matrix = _.cloneDeep(matrix.data)
 
 		for (let index1 = index; index1 > 0; index1--) {
 			matrix[index1] = matrix[index1 - 1]
@@ -52,23 +52,42 @@ class Matrix {
 		return matrix
 	}
 
+	static trim(matrix) {
+		matrix = _.cloneDeep(matrix.data)
+
+		for (let index = 0; index < matrix.length; index++) {
+			if (matrix[index].indexOf(1) === -1) {
+				matrix.splice(index, 1)
+				index--
+			}
+		}
+
+		for (let index = 0; index < matrix[0].length; index++) {
+			if (!matrix.filter(value => {return value[index] === 1}).length) {
+				for (let index1 = 0; index1 < matrix.length; index1++) {
+					matrix[index1].splice(index, 1)
+				}
+				index--
+			}
+		}
+
+		return matrix
+	}
+
 	static intersect(source, destination, x = 0, y = 0) {
 		source = source.data
 		destination = destination.data
 
-		if (y >= destination.length) {
-			return false
-		}
 		let sX = -1, sY = -1
 		for (let dY = y; dY < y + source.length; dY++) {
 			sY++
-			if (x >= destination[dY].length) {
-				return false
-			}
 			for (let dX = x; dX < x + source[sY].length; dX++) {
 				sX++
 				// console.log(x, y, dX, dY, sX, sY, source[sY][sX], destination[dY][dX])
-				if (!!source[sY][sX] && !!destination[dY][dX]) {
+				if (dY in destination && dX in destination[dY] && !!source[sY][sX] && !!destination[dY][dX]) {
+					return true
+				}
+				if ((!(dY in destination) || !(dX in destination[dY])) && !!source[sY][sX]) {
 					return true
 				}
 			}
@@ -76,6 +95,7 @@ class Matrix {
 		}
 		return false
 	}
+
 
 	static edge(matrix, edge = Enum.GAME.DIRECTION.DOWN) {
 		if (typeof edge === 'undefined') {
@@ -132,7 +152,7 @@ class Matrix {
 		source = source.data
 		destination = destination.data
 
-		let curX = -1, curY = -1, clone = _.clone(destination)
+		let curX = -1, curY = -1, clone = _.cloneDeep(destination)
 		for (let index = y; index < destination.length; index++) {
 			curX = -1
 
@@ -145,7 +165,9 @@ class Matrix {
 					break
 				}
 
-				clone[index][index1] = source[curY][curX]
+				if (!!source[curY][curX]) {
+					clone[index][index1] = source[curY][curX]
+				}
 			}
 		}
 		return clone

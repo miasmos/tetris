@@ -3,7 +3,7 @@ import { PhaserGame } from '../Game'
 import Util from '../Util'
 const config = require('../../config.json')
 
-export default class NumericTextDisplay extends Phaser.Group {
+export default class UINumericText extends Phaser.Group {
 	constructor(defaultTitle = "", defaultNumber = 0) {
 		super(PhaserGame)
 

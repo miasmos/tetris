@@ -1,7 +1,8 @@
 import 'phaser-shim'
 const Enum = require('../enum.json'),
 	config = require('../config.json'),
-	uuid = require('uuid/v4')
+	uuid = require('uuid/v4'),
+	_ = require('lodash')
 
 let PhaserGame, instance
 class Game {
@@ -31,7 +32,6 @@ class Game {
 	Start() {
 		if (!PhaserGame) {
 			PhaserGame = new Phaser.Game(this.width, this.height, Phaser.AUTO, 'game', { preload: this._preload.bind(this), create: this._create.bind(this), update: this._update.bind(this) })
-			this.timer = new Phaser.Timer(PhaserGame)
 		}
 		return PhaserGame
 	}
@@ -56,6 +56,12 @@ class Game {
 			PhaserGame.time.events.remove(this.dropEvent)
 			this.dropEvent = undefined
 		}
+	}
+
+	ResetDropInterval() {
+		let event = _.clone(this.dropEvent)
+		this.StopDropInterval()
+		this.StartDropInterval(event.delay, event.callback, event.callbackContext)
 	}
 
 	OnCreate(fn) {

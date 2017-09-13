@@ -18,7 +18,7 @@ export default class Tetromino {
 		this.width = 0
 		this.height = 0
 
-		this.matrices = {}
+		this.rotations = {}
 		this.direction = Enum.GAME.DIRECTION.UP
 	}
 
@@ -90,15 +90,6 @@ export default class Tetromino {
 		this.group.removeAll(true)
 	}
 
-	Orient(direction) {
-		if (direction in this.matrices) {
-			this.matrix = this.matrices[direction]
-			this.direction = direction
-		}
-
-		return this.matrix
-	}
-
 	RotateCW() {
 		const keys = Object.keys(Enum.GAME.DIRECTION)
 		if (this.direction === keys.length - 1) {
@@ -107,7 +98,7 @@ export default class Tetromino {
 			this.direction = Enum.GAME.DIRECTION[keys[this.direction + 1]]
 		}
 
-		this.matrix = this.matrices[this.direction]
+		this.matrix = this.rotations[this.direction]
 		return this.matrix
 	}
 
@@ -119,7 +110,7 @@ export default class Tetromino {
 			this.direction = Enum.GAME.DIRECTION[keys[this.direction - 1]]
 		}
 
-		this.matrix = this.matrices[this.direction]
+		this.matrix = this.rotations[this.direction]
 		return this.matrix
 	}
 }

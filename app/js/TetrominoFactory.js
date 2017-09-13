@@ -9,19 +9,19 @@ class _TetrominoFactory {
 		this.min = 0
 		this.max = Object.keys(config.tetromino).length - 1
 
-		this.matrices = {}
+		this.rotations = {}
 		for (let index in config.tetromino) {	//cache all tetromino orientations
 			const tetrominoData = config.tetromino[index]
-
-			this.matrices[tetrominoData.name] = this.Generate(tetrominoData.name)
+			this.rotations[tetrominoData.name] = this.GenerateRotations(tetrominoData.name)
 		}
 
 		this.redrawCount = 6
 		this.count = 0
 		this.bag = new Bag(4)
+		this.next = undefined
 	}
 
-	Generate(type) {
+	GenerateRotations(type) {
 		let defaultMatrix = config.tetromino[type].matrix,
 			directions = {}
 
@@ -43,8 +43,8 @@ class _TetrominoFactory {
 
 	Create(type) {
 		let tetromino = new Tetromino(type)
-		tetromino.matrices = this.matrices[type]
-		tetromino.matrix = tetromino.matrices[Enum.GAME.DIRECTION.UP]
+		tetromino.rotations = this.rotations[type]
+		tetromino.matrix = tetromino.rotations[Enum.GAME.DIRECTION.UP]
 		return tetromino
 	}
 
@@ -64,22 +64,30 @@ class _TetrominoFactory {
 
 	Get(type) {
 		if (typeof type === 'undefined') {
-			if (this.count = 0) {
+			if (typeof this.next === 'undefined') {
 				type = this.Draw(1, [Enum.GAME.TETROMINO.S, Enum.GAME.TETROMINO.Z, Enum.GAME.TETROMINO.O])
-			} else {
-				type = this.Draw()
+				this.next = this.Create(type)
 			}
+			type = this.Draw()
 		}
 
-		this.bag.Insert(type)
-		console.log(this.bag)
+		let current = this.next
+		this.bag.Insert(current.name)
+		this.next = this.Create(type)
+		this.bag.Log()
 		this.count++
-		return this.Create(type)
+
+		return current
 	}
 
 	Reset() {
 		this.count = 0
 		this.bag = new Bag(4)
+		this.next = this.Get()
+	}
+
+	GetNext() {
+		return this.next
 	}
 }
 
@@ -98,6 +106,12 @@ class Bag {
 
 	Contains(value) {
 		return this.pool.indexOf(value) > -1
+	}
+
+	Log() {
+		let str = ''
+		this.pool.map(value => str += ` ${value}`)
+		console.log(str)
 	}
 }
 

@@ -1,5 +1,6 @@
 import Util from './Util'
-const uuid = require('uuid/v4')
+const uuid = require('uuid/v4'),
+	_ = require('lodash')
 
 //2-dimensional
 export default class Matrix {
@@ -53,7 +54,7 @@ export default class Matrix {
 	}
 
 	set data(data) {
-		this._data = data
+		this._data = _.cloneDeep(data)
 		this.width = data[0].length
 		this.height = data.length
 	}

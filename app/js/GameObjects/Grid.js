@@ -52,10 +52,18 @@ export default class Grid extends Phaser.Group {
 		this.add(blockContainer)
 	}
 
-	SpawnTetromino() {
+	SpawnTetromino(spin) {
 		let tetromino = TetrominoFactory.Get(),
 			x = Math.floor(config.game.grid.width / 2 - tetromino.matrix.width / 2),
 			y = 0
+
+		if (typeof spin !== 'undefined') {
+			if (spin === Enum.GAME.SPIN.CW) {
+				tetromino.RotateCW()
+			} else {
+				tetromino.RotateCCW()
+			}
+		}
 
 		if (this.HitTest(x, y, tetromino)) {
 			return false
@@ -85,37 +93,30 @@ export default class Grid extends Phaser.Group {
 
 	TetrominoWillCollide(direction = Enum.GAME.DIRECTION.DOWN) {
 		let tetromino = this.gameObjects.tetromino,
-			local = {
+			update = {
 				x: tetromino.x,
 				y: tetromino.y
 			}
 
 		switch(direction) {
 			case Enum.GAME.DIRECTION.RIGHT:
-				local.x += 1
+				update.x += 1
 				break
 			case Enum.GAME.DIRECTION.DOWN:
-				local.y += 1
+				update.y += 1
 				break
 			case Enum.GAME.DIRECTION.LEFT:
-				local.x -= 1
+				update.x -= 1
 				break
 			case Enum.GAME.DIRECTION.UP:
-				local.x -= 1
+				update.y -= 1
 				break
 		}
 
-		return this.HitTest(local.x, local.y, tetromino)
+		return this.HitTest(update.x, update.y, tetromino)
 	}
 
 	HitTest(x, y, tetromino, direction) {
-		if (y + tetromino.matrix.height > config.game.grid.height ||
-			x + tetromino.matrix.width > config.game.grid.width ||
-			x < 0 ||
-			y < 0) {
-			return true
-		}
-
 		let tetrominoMatrix
 
 		switch(direction) {
@@ -186,7 +187,6 @@ export default class Grid extends Phaser.Group {
 				if (++cnt >= 5) {
 					clearInterval(interval)
 					clear.call(this)
-					console.log(this.gameObjects.blockContainer)
 					callback.call()
 					this.clearing = false
 				}
@@ -198,14 +198,18 @@ export default class Grid extends Phaser.Group {
 
 			for (let index = largestAffectedRowIndex; index >= 0; index--) {
 				const isClearedLine = clearedRows.indexOf(index) > -1
+				if (isClearedLine) console.log('clearing line', index)
 				for (let index1 = 0; index1 < this.lookups.blocks.data[index].length; index1++) {
 					const block = this.lookups.blocks.data[index][index1]
 
 					if (isClearedLine) {
+						console.log('clear block', index1, index)
 						this._ClearBlock(index1, index)
 					} else {
 						if (!!block) {
+							console.log('move block', index1, index)
 							block.y += yMod
+							console.log(block)
 						}
 					}
 				}
@@ -222,6 +226,8 @@ export default class Grid extends Phaser.Group {
 					shouldIncrement = true
 				}
 			}
+
+			this.matrix.log()
 		}
 	}
 
