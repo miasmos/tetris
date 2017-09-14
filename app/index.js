@@ -76,7 +76,8 @@ game.OnUpdate(PhaserGame => {
 			}
 		} else if (!Keyboard.isBuffered(Phaser.Keyboard.UP) && Keyboard.isDown(Phaser.Keyboard.UP)) {
 			Keyboard.buffer(Phaser.Keyboard.UP)
-			//soft drop
+			grid.DropTetromino()
+			didMove = true
 		} else if (!Keyboard.isBuffered(Phaser.Keyboard.DOWN) && Keyboard.isDown(Phaser.Keyboard.DOWN)) {
 			Keyboard.buffer(Phaser.Keyboard.DOWN, 50)
 			if (!grid.TetrominoWillCollide(Enum.GAME.DIRECTION.DOWN)) {

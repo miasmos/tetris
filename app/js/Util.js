@@ -1,6 +1,6 @@
 const _ = require('lodash'),
 	Enum = require('../enum.json')
-
+import * as _Matrix from './Matrix'
 class Matrix {
 	static rotate(matrix) {	//[[1, 1, 1], [0, 1, 0]]
 		let source = _.cloneDeep(matrix.data),
@@ -33,6 +33,26 @@ class Matrix {
 		}
 	}
 
+	static dropY(source, destination, x, y) {
+		source = this.trim(source)
+		destination = destination.data
+;(new _Matrix.default(source)).log()
+;(new _Matrix.default(destination)).log()
+
+		for (var index = y + source.length; index < destination.length; index++) {
+			for (var index1 = x; index1 < source[0].length + x; index1++) {
+				console.log(index, index1)
+				if (!(index1 in destination[index])) {
+					continue
+				}
+				if (!!destination[index][index1] && !!source[index - source.length][index1 - source[0].length]) {
+					return index - source.length
+				}
+			}
+		}
+		return destination.length - source.length - 1
+	}
+
 	static generate(width, height, fill=0) {
 		let arr = []
 		for (let index = 0; index < height; index++) {
@@ -43,7 +63,7 @@ class Matrix {
 
 	static removeRow(matrix, index) {
 		let width = matrix.width
-		matrix = _.cloneDeep(matrix.data)
+		matrix = _.clone(matrix.data)
 
 		for (let index1 = index; index1 > 0; index1--) {
 			matrix[index1] = matrix[index1 - 1]
@@ -53,7 +73,7 @@ class Matrix {
 	}
 
 	static trim(matrix) {
-		matrix = _.cloneDeep(matrix.data)
+		matrix = _.clone(matrix.data)
 
 		for (let index = 0; index < matrix.length; index++) {
 			if (matrix[index].indexOf(1) === -1) {

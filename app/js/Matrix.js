@@ -54,7 +54,7 @@ export default class Matrix {
 	}
 
 	set data(data) {
-		this._data = _.cloneDeep(data)
+		this._data = _.clone(data)
 		this.width = data[0].length
 		this.height = data.length
 	}
