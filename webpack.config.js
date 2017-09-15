@@ -1,7 +1,6 @@
 var webpack = require('webpack'),
     path = require('path'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
-    BitBarWebpackProgressPlugin = require("bitbar-webpack-progress-plugin")
     HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
         template: path.join(__dirname, '/app/index.html'),
         filename: 'index.html',
@@ -47,7 +46,6 @@ module.exports = {
     ]
   },
   plugins: [
-    HTMLWebpackPluginConfig,
-    BitBarWebpackProgressPlugin
+    HTMLWebpackPluginConfig
   ]
 }
