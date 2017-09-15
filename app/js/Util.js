@@ -3,7 +3,7 @@ const _ = require('lodash'),
 import * as _Matrix from './Matrix'
 class Matrix {
 	static rotate(matrix) {	//[[1, 1, 1], [0, 1, 0]]
-		let source = _.cloneDeep(matrix.data),
+		let source = _.clone(matrix.data),
 			rows = source.length,
 			destination = []
 
@@ -23,6 +23,17 @@ class Matrix {
 		return destination
 	}
 
+	static origin(matrix) {
+		let source = _.clone(matrix.data)
+		for (let index = 0; index < source.length; index++) {
+			for (let index1 = 0; index1 < source[index].length; index1++) {
+				if (!!source[index1][index]) {
+					return { x: index1, y: index }
+				}
+			}
+		}
+	}
+
 	static highestNonEmptyRow(matrix) {
 		matrix = matrix.data
 		for (let index = 0; index < matrix.length - 1; index++) {
@@ -34,23 +45,41 @@ class Matrix {
 	}
 
 	static dropY(source, destination, x, y) {
+		let untrimmedSource = source
 		source = this.trim(source)
 		destination = destination.data
-;(new _Matrix.default(source)).log()
-;(new _Matrix.default(destination)).log()
 
-		for (var index = y + source.length; index < destination.length; index++) {
-			for (var index1 = x; index1 < source[0].length + x; index1++) {
-				console.log(index, index1)
-				if (!(index1 in destination[index])) {
-					continue
-				}
-				if (!!destination[index][index1] && !!source[index - source.length][index1 - source[0].length]) {
-					return index - source.length
+		if (y + source.length < destination.length) {
+			for (var dY = destination.length - 1; dY > y + source.length; dY--) {
+				var hitCount = source.length * source[0].length,
+					passedCount = 0,
+					shouldBreak = false
+
+				for (var dX = x; dX < source[0].length + x; dX++) {
+					if (!(dX in destination[dY])) {
+						break
+					}
+
+					var sX = dX - source[0].length
+					for (var sY = source.length - 1; sY >= 0; sY--) {
+						console.log('check', dX, dY, sX, sY, !!destination[dY][dX] && !!source[sY][sX])
+						if (!!destination[dY][dX] && !!source[sY][sX]) {
+							shouldBreak = true
+							break
+						}
+						passedCount++
+					}
+					if (shouldBreak) {
+						break
+					}
+					if (passedCount === hitCount) {
+						console.log('no collisions, returning', dY)
+						return dY
+					}
 				}
 			}
 		}
-		return destination.length - source.length - 1
+		return destination.length - 1
 	}
 
 	static generate(width, height, fill=0) {

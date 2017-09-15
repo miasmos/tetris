@@ -17,6 +17,10 @@ export default class Tetromino {
 		this.size = undefined
 		this.width = 0
 		this.height = 0
+		this.origin = {
+			x: 0,
+			y: 0
+		}
 
 		this.rotations = {}
 		this.direction = Enum.GAME.DIRECTION.UP
@@ -98,7 +102,7 @@ export default class Tetromino {
 			this.direction = Enum.GAME.DIRECTION[keys[this.direction + 1]]
 		}
 
-		this.matrix = this.rotations[this.direction]
+		this.matrix = this.rotations[this.direction].matrix
 		return this.matrix
 	}
 
@@ -110,7 +114,7 @@ export default class Tetromino {
 			this.direction = Enum.GAME.DIRECTION[keys[this.direction - 1]]
 		}
 
-		this.matrix = this.rotations[this.direction]
+		this.matrix = this.rotations[this.direction].matrix
 		return this.matrix
 	}
 }

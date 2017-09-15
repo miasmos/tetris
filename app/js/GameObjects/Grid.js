@@ -90,11 +90,11 @@ export default class Grid extends Phaser.Group {
 			tetromino.RotateCCW()
 		}
 	}
-	
+
 	DropTetromino() {
 		let tetromino = this.gameObjects.tetromino,
 			y = Util.Matrix.dropY(tetromino.matrix, this.matrix, tetromino.x, tetromino.y)
-		tetromino.y = y
+		tetromino.y = y + tetromino.origin.y - tetromino.height + 2
 	}
 
 	TetrominoWillCollide(direction = Enum.GAME.DIRECTION.DOWN) {

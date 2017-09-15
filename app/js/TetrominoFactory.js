@@ -23,19 +23,29 @@ class _TetrominoFactory {
 
 	GenerateRotations(type) {
 		let defaultMatrix = config.tetromino[type].matrix,
+			defaultOrigin = config.tetromino[type].origin,
 			directions = {}
 
 		for (let index in Enum.GAME.DIRECTION) {	//generate matrices for each orientation of the tetromino
 			let direction = Enum.GAME.DIRECTION[index],
-				matrix
+				matrix,
+				origin
 
 			if (direction === Enum.GAME.DIRECTION.UP) {
 				matrix = new Matrix(defaultMatrix)
+				origin = {
+					x: defaultOrigin[0],
+					y: defaultOrigin[1]
+				}
 			} else {
-				matrix = new Matrix(Util.Matrix.rotate(directions[direction - 1]))
+				matrix = new Matrix(Util.Matrix.rotate(directions[direction - 1].matrix))
+				origin = Util.Matrix.origin(matrix)
 			}
 
-			directions[direction] = matrix
+			directions[direction] = {
+				matrix,
+				origin
+			}
 		}
 
 		return directions
@@ -44,7 +54,8 @@ class _TetrominoFactory {
 	Create(type) {
 		let tetromino = new Tetromino(type)
 		tetromino.rotations = this.rotations[type]
-		tetromino.matrix = tetromino.rotations[Enum.GAME.DIRECTION.UP]
+		tetromino.matrix = tetromino.rotations[Enum.GAME.DIRECTION.UP].matrix
+		tetromino.origin = tetromino.rotations[Enum.GAME.DIRECTION.UP].origin
 		return tetromino
 	}
 
