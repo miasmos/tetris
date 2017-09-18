@@ -64,10 +64,10 @@ class _TetrominoFactory {
 			value = Object.keys(config.tetromino)[index]
 
 		if (ignore.indexOf(value) > -1) {console.log(`got ignored piece ${value}, redrawing`)
-			return this.Draw(count)
+			return this.Draw(count, ignore)
 		}
 		if (this.bag.Contains(value) && count <= this.redrawCount) {console.log(`bag contains ${value}, redrawing`)
-			return this.Draw(++count)
+			return this.Draw(++count, ignore)
 		}
 
 		return value

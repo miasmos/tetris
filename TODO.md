@@ -7,6 +7,5 @@ implement level system
 implement menu screen  
 add sound effects / bgm  
 implement options screen  
-implement drop  
 finish UI detailing / update font  
 combo system?  

@@ -44,44 +44,6 @@ class Matrix {
 		}
 	}
 
-	static dropY(source, destination, x, y) {
-		let untrimmedSource = source
-		source = this.trim(source)
-		destination = destination.data
-
-		if (y + source.length < destination.length) {
-			for (var dY = destination.length - 1; dY > y + source.length; dY--) {
-				var hitCount = source.length * source[0].length,
-					passedCount = 0,
-					shouldBreak = false
-
-				for (var dX = x; dX < source[0].length + x; dX++) {
-					if (!(dX in destination[dY])) {
-						break
-					}
-
-					var sX = dX - source[0].length
-					for (var sY = source.length - 1; sY >= 0; sY--) {
-						console.log('check', dX, dY, sX, sY, !!destination[dY][dX] && !!source[sY][sX])
-						if (!!destination[dY][dX] && !!source[sY][sX]) {
-							shouldBreak = true
-							break
-						}
-						passedCount++
-					}
-					if (shouldBreak) {
-						break
-					}
-					if (passedCount === hitCount) {
-						console.log('no collisions, returning', dY)
-						return dY
-					}
-				}
-			}
-		}
-		return destination.length - 1
-	}
-
 	static generate(width, height, fill=0) {
 		let arr = []
 		for (let index = 0; index < height; index++) {
