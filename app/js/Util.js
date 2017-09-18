@@ -192,7 +192,7 @@ class Matrix {
 			}
 			str += '\n'
 		}
-		console.log(str + '\n')
+		// console.log(str + '\n')
 	}
 }
 

@@ -84,10 +84,40 @@ export default class Grid extends Phaser.Group {
 
 	SpinTetromino(direction = Enum.GAME.SPIN.CW) {
 		let tetromino = this.gameObjects.tetromino
+
 		if (direction === Enum.GAME.SPIN.CW) {
 			tetromino.RotateCW()
 		} else {
 			tetromino.RotateCCW()
+		}
+
+		if (!this.HitTest(tetromino.x, tetromino.y, tetromino)) {
+			return
+		}
+
+		// if (tetromino.name === Enum.TETROMINO.I) {
+		// 	revertSpin()
+		// 	return
+		// }
+
+		if (!this.TetrominoWillCollide(Enum.GAME.DIRECTION.RIGHT)) {
+			this.MoveTetromino(1, 0)
+			return
+		}
+
+		if (!this.TetrominoWillCollide(Enum.GAME.DIRECTION.LEFT)) {
+			this.MoveTetromino(-1, 0)
+			return
+		}
+
+		revertSpin()
+
+		function revertSpin() {
+			if (direction === Enum.GAME.SPIN.CW) {
+				tetromino.RotateCCW()
+			} else {
+				tetromino.RotateCW()
+			}
 		}
 	}
 
@@ -194,58 +224,45 @@ export default class Grid extends Phaser.Group {
 	}
 
 	ClearLines(callback) {
-		if (this.clearing) return
-		this.clearing = true
 		let clearedRows = this.matrix.getNonEmptyRows()
 
-		let cnt = 0,
-			interval = setInterval(() => {
-				clearedRows.map(value => this.ToggleRow(value))
-				if (++cnt >= 5) {
-					clearInterval(interval)
-					clear.call(this)
-					callback.call()
-					this.clearing = false
-				}
-			}, 150)
+		clearedRows.map(value => this.ToggleRow(value))
 
-		function clear() {
-			let yMod = 1, shouldIncrement = false
-			const largestAffectedRowIndex = clearedRows[clearedRows.length - 1]
+		let yMod = 1, shouldIncrement = false
+		const largestAffectedRowIndex = clearedRows[clearedRows.length - 1]
 
-			for (let index = largestAffectedRowIndex; index >= 0; index--) {
-				const isClearedLine = clearedRows.indexOf(index) > -1
-				if (isClearedLine) console.log('clearing line', index)
-				for (let index1 = 0; index1 < this.lookups.blocks.data[index].length; index1++) {
-					const block = this.lookups.blocks.data[index][index1]
-
-					if (isClearedLine) {
-						console.log('clear block', index1, index)
-						this._ClearBlock(index1, index)
-					} else {
-						if (!!block) {
-							console.log('move block', index1, index)
-							block.y += yMod
-							console.log(block)
-						}
-					}
-				}
+		for (let index = largestAffectedRowIndex; index >= 0; index--) {
+			const isClearedLine = clearedRows.indexOf(index) > -1
+			if (isClearedLine) console.log('clearing line', index)
+			for (let index1 = 0; index1 < this.lookups.blocks.data[index].length; index1++) {
+				const block = this.lookups.blocks.data[index][index1]
 
 				if (isClearedLine) {
-					this.matrix.overwrite(Util.Matrix.removeRow(this.matrix, index))
-					this.lookups.blocks.overwrite(Util.Matrix.removeRow(this.lookups.blocks, index))
-
-					if (shouldIncrement) {
-						yMod++
+					console.log('clear block', index1, index)
+					this._ClearBlock(index1, index)
+				} else {
+					if (!!block) {
+						console.log('move block', index1, index)
+						block.y += yMod
+						console.log(block)
 					}
-					index++
-					clearedRows = this.matrix.getNonEmptyRows()
-					shouldIncrement = true
 				}
 			}
 
-			this.matrix.log()
+			if (isClearedLine) {
+				this.matrix.overwrite(Util.Matrix.removeRow(this.matrix, index))
+				this.lookups.blocks.overwrite(Util.Matrix.removeRow(this.lookups.blocks, index))
+
+				if (shouldIncrement) {
+					yMod++
+				}
+				index++
+				clearedRows = this.matrix.getNonEmptyRows()
+				shouldIncrement = true
+			}
 		}
+
+		this.matrix.log()
 	}
 
 	ToggleRow(index) {

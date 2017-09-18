@@ -63,10 +63,10 @@ class _TetrominoFactory {
 		const index = Util.Math.randomInt(this.min, this.max),
 			value = Object.keys(config.tetromino)[index]
 
-		if (ignore.indexOf(value) > -1) {console.log(`got ignored piece ${value}, redrawing`)
+		if (ignore.indexOf(value) > -1) {
 			return this.Draw(count, ignore)
 		}
-		if (this.bag.Contains(value) && count <= this.redrawCount) {console.log(`bag contains ${value}, redrawing`)
+		if (this.bag.Contains(value) && count <= this.redrawCount) {
 			return this.Draw(++count, ignore)
 		}
 
@@ -122,7 +122,7 @@ class Bag {
 	Log() {
 		let str = ''
 		this.pool.map(value => str += ` ${value}`)
-		console.log(str)
+		// console.log(str)
 	}
 }
 

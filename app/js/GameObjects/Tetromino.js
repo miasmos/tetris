@@ -94,27 +94,45 @@ export default class Tetromino {
 		this.group.removeAll(true)
 	}
 
-	RotateCW() {
+	RotateCW(commit = true) {
 		const keys = Object.keys(Enum.GAME.DIRECTION)
+		let matrix,
+			direction
+
 		if (this.direction === keys.length - 1) {
-			this.direction = Enum.GAME.DIRECTION.UP
+			direction = Enum.GAME.DIRECTION.UP
 		} else {
-			this.direction = Enum.GAME.DIRECTION[keys[this.direction + 1]]
+			direction = Enum.GAME.DIRECTION[keys[this.direction + 1]]
 		}
 
-		this.matrix = this.rotations[this.direction].matrix
-		return this.matrix
+		matrix = this.rotations[direction].matrix
+
+		if (!!commit) {
+			this.matrix = matrix
+			this.direction = direction
+		}
+
+		return matrix
 	}
 
-	RotateCCW() {
+	RotateCCW(commit = true) {
 		const keys = Object.keys(Enum.GAME.DIRECTION)
+		let matrix,
+			direction
+	
 		if (this.direction === 0) {
-			this.direction = keys.length - 1
+			direction = keys.length - 1
 		} else {
-			this.direction = Enum.GAME.DIRECTION[keys[this.direction - 1]]
+			direction = Enum.GAME.DIRECTION[keys[this.direction - 1]]
 		}
 
-		this.matrix = this.rotations[this.direction].matrix
-		return this.matrix
+		matrix = this.rotations[direction].matrix
+
+		if (!!commit) {
+			this.matrix = matrix
+			this.direction = direction
+		}
+
+		return matrix
 	}
 }

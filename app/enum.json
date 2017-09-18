@@ -40,6 +40,17 @@
 			"S": "S",
 			"T": "T",
 			"Z": "Z"
+		},
+		"LEVEL_TYPES": {
+			"LINE": 0,
+			"SPAWN": 1
+		},
+		"FRAME_TIMEOUT_TYPES": {
+			"SPAWN_DELAY": 0,
+			"DELAYED_AUTO_SHIFT": 1,
+			"LOCK_DELAY": 2,
+			"LINE_CLEAR_DELAY": 3,
+			"GRAVITY": 4
 		}
 	}
 }

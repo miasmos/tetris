@@ -10,7 +10,6 @@ class Game {
 		if (!instance) {
 			this.width = width
 			this.height = height
-			this.dropEvent = undefined
 			this.state = Enum.GAME.STATE.IDLE
 			this.initCallbacks = {
 				create: [],
@@ -38,30 +37,6 @@ class Game {
 
 	Get() {
 		return PhaserGame
-	}
-
-	StartDropInterval(interval, fn, context) {
-		if (!!this.dropEvent) {
-			return
-		}
-		if (typeof context === 'undefined') {
-			context = fn
-		}
-
-		this.dropEvent = PhaserGame.time.events.loop(interval, fn, context)
-	}
-
-	StopDropInterval() {
-		if (!!this.dropEvent) {
-			PhaserGame.time.events.remove(this.dropEvent)
-			this.dropEvent = undefined
-		}
-	}
-
-	ResetDropInterval() {
-		let event = _.clone(this.dropEvent)
-		this.StopDropInterval()
-		this.StartDropInterval(event.delay, event.callback, event.callbackContext)
 	}
 
 	OnCreate(fn) {
