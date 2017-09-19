@@ -38,14 +38,31 @@ class _TetrominoFactory {
 					y: defaultOrigin[1]
 				}
 			} else {
-				matrix = new Matrix(Util.Matrix.rotate(directions[direction - 1].matrix))
-				origin = Util.Matrix.origin(matrix)
+				const shouldHaveTwoRotations = type === Enum.GAME.TETROMINO.I || type === Enum.GAME.TETROMINO.S || type === Enum.GAME.TETROMINO.Z
+				if (shouldHaveTwoRotations) {
+					if (direction === Enum.GAME.DIRECTION.DOWN) {
+						matrix = new Matrix(directions[Enum.GAME.DIRECTION.UP].matrix.data)
+						origin = directions[Enum.GAME.DIRECTION.UP].origin
+					} else if (direction === Enum.GAME.DIRECTION.LEFT) {
+						matrix = new Matrix(directions[Enum.GAME.DIRECTION.RIGHT].matrix.data)
+						origin = directions[Enum.GAME.DIRECTION.RIGHT].origin
+					} else {
+						matrix = new Matrix(Util.Matrix.rotate(directions[direction - 1].matrix))
+						origin = Util.Matrix.origin(matrix)
+					}
+				} else {
+					matrix = new Matrix(Util.Matrix.rotate(directions[direction - 1].matrix))
+					origin = Util.Matrix.origin(matrix)
+				}
 			}
 
 			directions[direction] = {
 				matrix,
 				origin
 			}
+
+			console.log(direction)
+			matrix.log()
 		}
 
 		return directions

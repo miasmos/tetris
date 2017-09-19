@@ -55,7 +55,7 @@ export default class Grid extends Phaser.Group {
 	SpawnTetromino(spin) {
 		let tetromino = TetrominoFactory.Get(),
 			x = Math.floor(config.game.grid.width / 2 - tetromino.matrix.width / 2),
-			y = 0
+			y = -1
 
 		if (typeof spin !== 'undefined') {
 			if (spin === Enum.GAME.SPIN.CW) {

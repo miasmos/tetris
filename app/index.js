@@ -13,7 +13,7 @@ const config = require('./config.json'),
 	game = new Game(config.game.width, config.game.height)
 
 let grid, Keyboard, Level,
-	didMovePiece = false, didShiftPiece = false, canLock = false, gravity = 0
+	didMovePiece = false, didDropPiece = false, gravity = 0
 
 game.OnCreate(PhaserGame => {
 	PhaserGame.time.advancedTiming = true
@@ -63,50 +63,57 @@ game.OnUpdate(PhaserGame => {
 			}
 		}
 
-		if (!Keyboard.isBuffered(Phaser.Keyboard.Z) && Keyboard.isDown(Phaser.Keyboard.Z)) {
-			Keyboard.buffer(Phaser.Keyboard.Z)
-			grid.SpinTetromino(Enum.GAME.SPIN.CW)
-			didMovePiece = true
-		} else if (!Keyboard.isBuffered(Phaser.Keyboard.X) && Keyboard.isDown(Phaser.Keyboard.X)) {
-			Keyboard.buffer(Phaser.Keyboard.X)
-			grid.SpinTetromino(Enum.GAME.SPIN.CCW)
-			didMovePiece = true
-		}
+		if (!didDropPiece) {
+			if (!Keyboard.isBuffered(Phaser.Keyboard.Z) && Keyboard.isDown(Phaser.Keyboard.Z)) {
+				Keyboard.buffer(Phaser.Keyboard.Z)
+				grid.SpinTetromino(Enum.GAME.SPIN.CW)
+				didMovePiece = true
+			} else if (!Keyboard.isBuffered(Phaser.Keyboard.X) && Keyboard.isDown(Phaser.Keyboard.X)) {
+				Keyboard.buffer(Phaser.Keyboard.X)
+				grid.SpinTetromino(Enum.GAME.SPIN.CCW)
+				didMovePiece = true
+			}
 
-		let autoshiftTimeoutSet = FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.DELAYED_AUTO_SHIFT)
-		if (!autoshiftTimeoutSet || FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.DELAYED_AUTO_SHIFT) || (Keyboard.isDown(Phaser.Keyboard.LEFT) && !Keyboard.isBuffered(Phaser.Keyboard.LEFT)) || (Keyboard.isDown(Phaser.Keyboard.RIGHT) && !Keyboard.isBuffered(Phaser.Keyboard.RIGHT))) {
-			if (Keyboard.isDown(Phaser.Keyboard.LEFT)) {
-				FrameTimeout.DelayedAutoShift()
-				Keyboard.buffer(Phaser.Keyboard.LEFT)
+			let autoshiftTimeoutSet = FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.DELAYED_AUTO_SHIFT)
+		
+			if (!autoshiftTimeoutSet || FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.DELAYED_AUTO_SHIFT) || (Keyboard.isDown(Phaser.Keyboard.LEFT) && !Keyboard.isBuffered(Phaser.Keyboard.LEFT)) || (Keyboard.isDown(Phaser.Keyboard.RIGHT) && !Keyboard.isBuffered(Phaser.Keyboard.RIGHT))) {
+				if (Keyboard.isDown(Phaser.Keyboard.LEFT)) {
+					FrameTimeout.DelayedAutoShift()
+					Keyboard.buffer(Phaser.Keyboard.LEFT)
 
-				if (!grid.TetrominoWillCollide(Enum.GAME.DIRECTION.LEFT)) {
-					grid.MoveTetromino(-1, 0)
-					didMovePiece = true
-				}
-			} else if (Keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-				FrameTimeout.DelayedAutoShift()
-				Keyboard.buffer(Phaser.Keyboard.RIGHT)
+					if (!grid.TetrominoWillCollide(Enum.GAME.DIRECTION.LEFT)) {
+						grid.MoveTetromino(-1, 0)
+						didMovePiece = true
+					}
+				} else if (Keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+					FrameTimeout.DelayedAutoShift()
+					Keyboard.buffer(Phaser.Keyboard.RIGHT)
 
-				if (!grid.TetrominoWillCollide(Enum.GAME.DIRECTION.RIGHT)) {
-					grid.MoveTetromino(1, 0)
-					didMovePiece = true
+					if (!grid.TetrominoWillCollide(Enum.GAME.DIRECTION.RIGHT)) {
+						grid.MoveTetromino(1, 0)
+						didMovePiece = true
+					}
 				}
 			}
-		}
+			
 
-		if (!Keyboard.isBuffered(Phaser.Keyboard.UP) && Keyboard.isDown(Phaser.Keyboard.UP)) {
-			Keyboard.buffer(Phaser.Keyboard.UP)
-			grid.DropTetromino()
-			didMovePiece = true
-		} else if (!Keyboard.isBuffered(Phaser.Keyboard.DOWN) && Keyboard.isDown(Phaser.Keyboard.DOWN)) {
-			Keyboard.buffer(Phaser.Keyboard.DOWN, 50)
-			if (!grid.TetrominoWillCollide(Enum.GAME.DIRECTION.DOWN)) {
-				grid.MoveTetromino(0, 1)
+			if (!Keyboard.isBuffered(Phaser.Keyboard.UP) && Keyboard.isDown(Phaser.Keyboard.UP)) {
+				Keyboard.buffer(Phaser.Keyboard.UP)
+				grid.DropTetromino()
+				didDropPiece = true
 				didMovePiece = true
+			} else if (!Keyboard.isBuffered(Phaser.Keyboard.DOWN) && Keyboard.isDown(Phaser.Keyboard.DOWN)) {
+				Keyboard.buffer(Phaser.Keyboard.DOWN, 50)
+				if (!grid.TetrominoWillCollide(Enum.GAME.DIRECTION.DOWN)) {
+					grid.MoveTetromino(0, 1)
+					didMovePiece = true
+				}
 			}
 		}
 
 		if (FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.LOCK_DELAY)) {
+			didDropPiece = false
+			didMovePiece = false
 			game.SetState(Enum.GAME.STATE.TETROMINO_COLLIDED)
 		}
 

@@ -38,7 +38,7 @@ export default class Matrix {
 	}
 
 	log() {
-		Util.Matrix.log(this._data)
+		Util.Matrix.log(this.data)
 	}
 
 	getNonEmptyRows() {
