@@ -2,7 +2,7 @@ import 'phaser-shim'
 import { Game } from './js/Game'
 import Grid from './js/GameObjects/Grid'
 import TetrominoFactory from './js/TetrominoFactory'
-import Input from './js/Input'
+import InputManager from './js/InputManager'
 import Observer from './js/Observer'
 import SoundManager from './js/SoundManager'
 import UI from './js/UI'
@@ -178,7 +178,7 @@ game.OnPreload(PhaserGame => {
 	UI.Next.y = grid.y + 100
 	PhaserGame.add.existing(UI.Next)
 
-	Keyboard = new Input()
+	Keyboard = new InputManager()
 	Level = new LevelManager(emitter, UI.Level)
 	Sound = new SoundManager(emitter)
 	Sound.Play('BGM', true)

@@ -1,7 +1,7 @@
 import 'phaser-shim'
 import { PhaserGame } from './Game'
 
-export default class Input {
+export default class InputManager {
 	constructor() {
 		this.keyboard = PhaserGame.input.keyboard
 		this.keyboard.onDownCallback = this._onDown.bind(this)
