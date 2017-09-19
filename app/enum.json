@@ -22,6 +22,10 @@
 			"LOSE": 99,
 			"PAUSE": 100
 		},
+		"EVENTS": {
+			"SPAWN": 0,
+			"LINE": 1
+		},
 		"DIRECTION": {
 			"UP": 0,
 			"RIGHT": 1,
@@ -40,10 +44,6 @@
 			"S": "S",
 			"T": "T",
 			"Z": "Z"
-		},
-		"LEVEL_TYPES": {
-			"LINE": 0,
-			"SPAWN": 1
 		},
 		"FRAME_TIMEOUT_TYPES": {
 			"SPAWN_DELAY": 0,

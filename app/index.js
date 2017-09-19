@@ -3,17 +3,20 @@ import { Game } from './js/Game'
 import Grid from './js/GameObjects/Grid'
 import TetrominoFactory from './js/TetrominoFactory'
 import Input from './js/Input'
+import Observer from './js/Observer'
+import SoundManager from './js/SoundManager'
 import UI from './js/UI'
-import LevelTracker from './js/LevelTracker'
+import LevelManager from './js/LevelManager'
 import FrameTimeout from './js/FrameTimeout'
 import Util from './js/Util'
 
 const config = require('./config.json'),
 	Enum = require('./enum.json'),
+	emitter = new Observer(),
 	game = new Game(config.game.width, config.game.height)
 
-let grid, Keyboard, Level,
-	didMovePiece = false, didDropPiece = false, gravity = 0
+let grid, Keyboard, Level, Sound,
+	shouldUseSpawnDelay = false, didMovePiece = false, didDropPiece = false, gravity = 0
 
 game.OnCreate(PhaserGame => {
 	PhaserGame.time.advancedTiming = true
@@ -21,18 +24,17 @@ game.OnCreate(PhaserGame => {
 })
 
 game.OnUpdate(PhaserGame => {
-	// Util.Benchmark.start('update')
 	gravity = Level.Gravity()
 
 	if (game.state === Enum.GAME.STATE.SPAWN_TETROMINO) {
 		let spin
 
-		if (!FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.SPAWN_DELAY)) {
+		if (!FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.SPAWN_DELAY) && shouldUseSpawnDelay) {
 			FrameTimeout.SpawnDelay()
 		}
 
-		if (FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.SPAWN_DELAY)) {
-			Level.Add()
+		if (FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.SPAWN_DELAY) || !shouldUseSpawnDelay) {
+			shouldUseSpawnDelay = true
 
 			if (Keyboard.isDown(Phaser.Keyboard.Z)) {
 				spin = Enum.GAME.SPIN.CW
@@ -44,14 +46,22 @@ game.OnUpdate(PhaserGame => {
 			UI.Next.SetTetromino(TetrominoFactory.GetNext())
 
 			if (didPlace) {
+				emitter.emit(Enum.GAME.EVENTS.SPAWN, [TetrominoFactory.GetNext().name])
+				FrameTimeout.Gravity(gravity)
 				game.SetState(Enum.GAME.STATE.PLACING_TETROMINO)
 			} else {
-				//lose state
 				game.SetState(Enum.GAME.STATE.PAUSE)
 				console.log('loser')
 			}
 		}
 	} else if (game.state === Enum.GAME.STATE.PLACING_TETROMINO) {
+		if (FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.LOCK_DELAY)) {
+			didDropPiece = false
+			didMovePiece = false
+			game.SetState(Enum.GAME.STATE.TETROMINO_COLLIDED)
+			return
+		}
+
 		if (!FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.GRAVITY)) {
 			FrameTimeout.Gravity(gravity)
 		}
@@ -66,17 +76,19 @@ game.OnUpdate(PhaserGame => {
 		if (!didDropPiece) {
 			if (!Keyboard.isBuffered(Phaser.Keyboard.Z) && Keyboard.isDown(Phaser.Keyboard.Z)) {
 				Keyboard.buffer(Phaser.Keyboard.Z)
-				grid.SpinTetromino(Enum.GAME.SPIN.CW)
-				didMovePiece = true
+				const didSpin = grid.SpinTetromino(Enum.GAME.SPIN.CW)
+				if (didSpin) {
+					didMovePiece = true
+				}
 			} else if (!Keyboard.isBuffered(Phaser.Keyboard.X) && Keyboard.isDown(Phaser.Keyboard.X)) {
 				Keyboard.buffer(Phaser.Keyboard.X)
-				grid.SpinTetromino(Enum.GAME.SPIN.CCW)
-				didMovePiece = true
+				const didSpin = grid.SpinTetromino(Enum.GAME.SPIN.CCW)
+				if (didSpin) {
+					didMovePiece = true
+				}
 			}
-
-			let autoshiftTimeoutSet = FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.DELAYED_AUTO_SHIFT)
 		
-			if (!autoshiftTimeoutSet || FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.DELAYED_AUTO_SHIFT) || (Keyboard.isDown(Phaser.Keyboard.LEFT) && !Keyboard.isBuffered(Phaser.Keyboard.LEFT)) || (Keyboard.isDown(Phaser.Keyboard.RIGHT) && !Keyboard.isBuffered(Phaser.Keyboard.RIGHT))) {
+			if (!FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.DELAYED_AUTO_SHIFT) || FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.DELAYED_AUTO_SHIFT) || (Keyboard.isDown(Phaser.Keyboard.LEFT) && !Keyboard.isBuffered(Phaser.Keyboard.LEFT)) || (Keyboard.isDown(Phaser.Keyboard.RIGHT) && !Keyboard.isBuffered(Phaser.Keyboard.RIGHT))) {
 				if (Keyboard.isDown(Phaser.Keyboard.LEFT)) {
 					FrameTimeout.DelayedAutoShift()
 					Keyboard.buffer(Phaser.Keyboard.LEFT)
@@ -96,14 +108,13 @@ game.OnUpdate(PhaserGame => {
 				}
 			}
 			
-
 			if (!Keyboard.isBuffered(Phaser.Keyboard.UP) && Keyboard.isDown(Phaser.Keyboard.UP)) {
 				Keyboard.buffer(Phaser.Keyboard.UP)
 				grid.DropTetromino()
 				didDropPiece = true
 				didMovePiece = true
 			} else if (!Keyboard.isBuffered(Phaser.Keyboard.DOWN) && Keyboard.isDown(Phaser.Keyboard.DOWN)) {
-				Keyboard.buffer(Phaser.Keyboard.DOWN, 50)
+				Keyboard.buffer(Phaser.Keyboard.DOWN, 10)
 				if (!grid.TetrominoWillCollide(Enum.GAME.DIRECTION.DOWN)) {
 					grid.MoveTetromino(0, 1)
 					didMovePiece = true
@@ -111,20 +122,14 @@ game.OnUpdate(PhaserGame => {
 			}
 		}
 
-		if (FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.LOCK_DELAY)) {
-			didDropPiece = false
-			didMovePiece = false
-			game.SetState(Enum.GAME.STATE.TETROMINO_COLLIDED)
-		}
-
 		if (didMovePiece) {
 			if (grid.TetrominoWillCollide(Enum.GAME.DIRECTION.DOWN)) {
 				FrameTimeout.LockDelay()
 			}
-			FrameTimeout.Clear(Enum.GAME.FRAME_TIMEOUT_TYPES.GRAVITY)
 			didMovePiece = false
 		}
 	} else if (game.state === Enum.GAME.STATE.TETROMINO_COLLIDED) {
+		console.log(grid.AddTetrominoToGrid)
 		grid.AddTetrominoToGrid()
 			
 		if (!!grid.LinesCleared()) {
@@ -132,23 +137,22 @@ game.OnUpdate(PhaserGame => {
 		} else {
 			game.SetState(Enum.GAME.STATE.SPAWN_TETROMINO)
 		}
-
-		grid.matrix.log()
 	} else if (game.state === Enum.GAME.STATE.LINE_CLEARED) {
+		const numLinesCleared = grid.LinesCleared()
+
 		if (!FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.LINE_CLEAR_DELAY)) {
 			FrameTimeout.LineClearDelay()
+			console.log(grid)
+			grid.AnimateClearedLines()
+			emitter.emit(Enum.GAME.EVENTS.LINE, [numLinesCleared])
 		}
 
 		if (FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.LINE_CLEAR_DELAY)) {
+			grid.RemoveClearedLines()
 			game.SetState(Enum.GAME.STATE.SPAWN_TETROMINO)
 		}
-
-		const numLinesCleared = grid.LinesCleared()
-		Level.Add(numLinesCleared, Enum.GAME.LEVEL_TYPES.LINE)
-		grid.ClearLines()
 	}
 
-	// Util.Benchmark.end('update')
 	PhaserGame.debug.text(PhaserGame.time.fps || '--', 2, 14, "#00ff00")
 })
 
@@ -175,8 +179,9 @@ game.OnPreload(PhaserGame => {
 	PhaserGame.add.existing(UI.Next)
 
 	Keyboard = new Input()
-
-	Level = new LevelTracker(UI.Level)
+	Level = new LevelManager(emitter, UI.Level)
+	Sound = new SoundManager(emitter)
+	Sound.Play('BGM', true)
 })
 
 game.Start()

@@ -1,24 +1,37 @@
+import GameEventsConsumer from './GameEventsConsumer'
 const Enum = require('../enum.json'),
 	config = require('../config.json')
 
-export default class LevelTracker {
-	constructor(ui) {
+export default class LevelManager extends GameEventsConsumer {
+	constructor(emitter, ui) {
+		super(emitter)
 		this.ui = ui
+		this.name = 'LevelManager'
+		this.verbose = true
 		this.level = 0
 		this.Reset()
 	}
 
-	Add(value = 1, type = Enum.GAME.LEVEL_TYPES.SPAWN) {
-		if (type === Enum.GAME.LEVEL_TYPES.SPAWN) {
-			if (this.Is99()) {
-				return
-			}
+	onSpawn(type) {
+		super.onSpawn(type)
 
-			if (this.level === 998) {
-				return
-			}
+		if (this.Is99()) {
+			return
 		}
 
+		if (this.level === 998) {
+			return
+		}
+
+		this.Add()
+	}
+
+	onLine(linesCleared) {
+		super.onLine(linesCleared)
+		this.Add(linesCleared)
+	}
+
+	Add(value = 1) {
 		this.ui.Add(value)
 		this.level += value
 	}

@@ -19,6 +19,7 @@ class _TetrominoFactory {
 		this.count = 0
 		this.bag = new Bag(4)
 		this.next = undefined
+		this.current = undefined
 	}
 
 	GenerateRotations(type) {
@@ -60,9 +61,6 @@ class _TetrominoFactory {
 				matrix,
 				origin
 			}
-
-			console.log(direction)
-			matrix.log()
 		}
 
 		return directions
@@ -91,21 +89,22 @@ class _TetrominoFactory {
 	}
 
 	Get(type) {
-		if (typeof type === 'undefined') {
-			if (typeof this.next === 'undefined') {
-				type = this.Draw(1, [Enum.GAME.TETROMINO.S, Enum.GAME.TETROMINO.Z, Enum.GAME.TETROMINO.O])
-				this.next = this.Create(type)
-			}
-			type = this.Draw()
+		if (typeof type !== 'undefined') {
+			return this.Create(type)
 		}
 
-		let current = this.next
-		this.bag.Insert(current.name)
+		if (typeof this.next === 'undefined') {
+			type = this.Draw(1, [Enum.GAME.TETROMINO.S, Enum.GAME.TETROMINO.Z, Enum.GAME.TETROMINO.O])
+			this.next = this.Create(type)
+		}
+		type = this.Draw()
+
+		this.current = this.next
+		this.bag.Insert(this.current.name)
 		this.next = this.Create(type)
-		this.bag.Log()
 		this.count++
 
-		return current
+		return this.current
 	}
 
 	Reset() {
@@ -116,6 +115,10 @@ class _TetrominoFactory {
 
 	GetNext() {
 		return this.next
+	}
+
+	GetCurrent() {
+		return this.current
 	}
 }
 
@@ -139,7 +142,7 @@ class Bag {
 	Log() {
 		let str = ''
 		this.pool.map(value => str += ` ${value}`)
-		// console.log(str)
+		console.log(str)
 	}
 }
 

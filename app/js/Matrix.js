@@ -9,6 +9,8 @@ export default class Matrix {
 		this.height = 0
 		this.id = uuid()
 		this._data = [[], []]
+		this.nonEmptyRows = undefined
+		this.dirty = true
 		if (typeof data !== 'undefined') {
 			this.data = data
 		}
@@ -42,11 +44,17 @@ export default class Matrix {
 	}
 
 	getNonEmptyRows() {
-		let arr = []
-		for (let index = 0; index < this.data.length; index++) {
-			if (this.data[index].indexOf(0) === -1) arr.push(index)
+		if (this.dirty) {
+			let arr = []
+			for (let index = 0; index < this.data.length; index++) {
+				if (this.data[index].indexOf(0) === -1) arr.push(index)
+			}
+			this.nonEmptyRows = arr
+			this.dirty = false
+			return arr
+		} else {
+			return this.nonEmptyRows
 		}
-		return arr
 	}
 
 	get data() {
@@ -57,5 +65,6 @@ export default class Matrix {
 		this._data = _.clone(data)
 		this.width = data[0].length
 		this.height = data.length
+		this.dirty = true
 	}
 }

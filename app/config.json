@@ -13,6 +13,19 @@
 			"width": 10,
 			"height": 20
 		},
+		"soundDir": "assets/sfx/copyright",
+		"sounds": {
+			"BGM": "bgm_01.mp3",
+			"LINE_CLEAR": "Jq9_25.mp3",
+			"SPAWN_I": "Jq9_10.mp3",
+			"SPAWN_J": "Jq9_04.mp3",
+			"SPAWN_S": "Jq9_05.mp3",
+			"SPAWN_O": "Jq9_06.mp3",
+			"SPAWN_Z": "Jq9_07.mp3",
+			"SPAWN_T": "Jq9_08.mp3",
+			"SPAWN_L": "Jq9_09.mp3",
+			"CLAPPING": "clapping.mp3"
+		},
 		"spawnDelay": 30,
 		"delayedAutoShift": 14,
 		"lockDelay": 30,
@@ -52,7 +65,6 @@
 	},
 	"tetromino": {
 		"I": {
-			"index": 0,
 			"name": "I",
 			"color": "0xf67d03",
 			"matrix": [
@@ -64,7 +76,6 @@
 			"origin": [0, 1]
 		},
 		"J": {
-			"index": 1,
 			"name": "J",
 			"color": "0x0085eb",
 			"matrix": [
@@ -75,7 +86,6 @@
 			"origin": [0, 1]
 		},
 		"L": {
-			"index": 2,
 			"name": "L",
 			"color": "0xe99200",
 			"matrix": [
@@ -86,19 +96,15 @@
 			"origin": [0, 1]
 		},
 		"O": {
-			"index": 3,
 			"name": "O",
 			"color": "0xd4c500",
 			"matrix": [
-				[0, 0, 0, 0],
-				[0, 1, 1, 0],
-				[0, 1, 1, 0],
-				[0, 0, 0, 0]
+				[1, 1],
+				[1, 1]
 			],
-			"origin": [1, 1]
+			"origin": [0, 0]
 		},
 		"S": {
-			"index": 4,
 			"name": "S",
 			"color": "0xde1cde",
 			"matrix": [
@@ -109,7 +115,6 @@
 			"origin": [0, 1]
 		},
 		"T": {
-			"index": 5,
 			"name": "T",
 			"color": "0x00cddd",
 			"matrix": [
@@ -120,7 +125,6 @@
 			"origin": [0, 1]
 		},
 		"Z": {
-			"index": 6,
 			"name": "Z",
 			"color": "0x55e500",
 			"matrix": [

@@ -16,6 +16,7 @@ export default class Tetromino {
 		this._matrix = undefined
 		this.size = undefined
 		this.width = 0
+		this.opacity = 1
 		this.height = 0
 		this.origin = {
 			x: 0,
@@ -24,6 +25,22 @@ export default class Tetromino {
 
 		this.rotations = {}
 		this.direction = Enum.GAME.DIRECTION.UP
+	}
+
+	set opacity(value) {
+		if (!(typeof value === 'number' && value >= 0 && value <= 1)) {
+			return
+		}
+
+		this._opacity = value
+		for (let index in this.group.children) {
+			const block = this.group.children[index]
+			block.alpha = value
+		}
+	}
+
+	get opacity() {
+		return this._opacity
 	}
 
 	set gridX(value) {
@@ -81,6 +98,8 @@ export default class Tetromino {
 					block.active = true
 					block.x = curX
 					block.y = curY
+					console.log(this.opacity)
+					block.sprite.alpha = this.opacity
 					this.group.add(block.sprite)
 				}
 				curX++

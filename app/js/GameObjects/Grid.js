@@ -47,7 +47,8 @@ export default class Grid extends Phaser.Group {
 
 		this.gameObjects = {
 			blockContainer: blockContainer,
-			tetromino: undefined
+			tetromino: undefined,
+			shadowTetromino: undefined
 		}
 		this.add(blockContainer)
 	}
@@ -57,12 +58,23 @@ export default class Grid extends Phaser.Group {
 			x = Math.floor(config.game.grid.width / 2 - tetromino.matrix.width / 2),
 			y = -1
 
+		if (!!this.gameObjects.shadowTetromino) {
+			this.remove(this.gameObjects.shadowTetromino, true)
+		}
+		let shadow = TetrominoFactory.Get(tetromino.name)
+
 		if (typeof spin !== 'undefined') {
 			if (spin === Enum.GAME.SPIN.CW) {
 				tetromino.RotateCW()
+				shadow.RotateCW()
 			} else {
 				tetromino.RotateCCW()
+				shadow.RotateCCW()
 			}
+		}
+
+		if (tetromino.name === Enum.GAME.TETROMINO.O) {
+			y = 0
 		}
 
 		if (this.HitTest(x, y, tetromino)) {
@@ -72,18 +84,41 @@ export default class Grid extends Phaser.Group {
 			tetromino.y = y
 			this.gameObjects.tetromino = tetromino
 			this.add(tetromino.group)
+
+			shadow.opacity = 0.5
+			this.gameObjects.shadowTetromino = shadow
+			this.UpdateShadow()
+			this.add(shadow.group)
 			return true
 		}
 	}
 
+	GetTetromino() {
+		return this.gameObjects.tetromino
+	}
+
 	MoveTetromino(deltaX, deltaY) {
-		let tetromino = this.gameObjects.tetromino
+		let tetromino = this.gameObjects.tetromino,
+			shadow = this.gameObjects.shadow
+
 		tetromino.x += deltaX
 		tetromino.y += deltaY
+		this.UpdateShadow()
+	}
+
+	UpdateShadow() {
+		let tetromino = this.gameObjects.tetromino,
+			shadow = this.gameObjects.shadowTetromino
+
+		shadow.x = tetromino.x
+		shadow.y = tetromino.y
+		this.DropTetromino(shadow)
 	}
 
 	SpinTetromino(direction = Enum.GAME.SPIN.CW) {
-		let tetromino = this.gameObjects.tetromino
+		let shouldRevert = false,
+			tetromino = this.gameObjects.tetromino,
+			shadow = this.gameObjects.shadowTetromino
 
 		if (direction === Enum.GAME.SPIN.CW) {
 			tetromino.RotateCW()
@@ -91,39 +126,39 @@ export default class Grid extends Phaser.Group {
 			tetromino.RotateCCW()
 		}
 
-		if (!this.HitTest(tetromino.x, tetromino.y, tetromino)) {
-			return
+		if (this.HitTest(tetromino.x, tetromino.y, tetromino)) {
+			shouldRevert = true
 		}
 
-		// if (tetromino.name === Enum.TETROMINO.I) {
-		// 	revertSpin()
-		// 	return
-		// }
-
-		if (!this.TetrominoWillCollide(Enum.GAME.DIRECTION.RIGHT)) {
+		if (shouldRevert && !this.TetrominoWillCollide(Enum.GAME.DIRECTION.RIGHT)) {
 			this.MoveTetromino(1, 0)
-			return
+			shouldRevert = false
 		}
 
-		if (!this.TetrominoWillCollide(Enum.GAME.DIRECTION.LEFT)) {
+		if (shouldRevert && !this.TetrominoWillCollide(Enum.GAME.DIRECTION.LEFT)) {
 			this.MoveTetromino(-1, 0)
-			return
+			shouldRevert = false
 		}
 
-		revertSpin()
-
-		function revertSpin() {
+		if (shouldRevert) {
 			if (direction === Enum.GAME.SPIN.CW) {
 				tetromino.RotateCCW()
 			} else {
 				tetromino.RotateCW()
 			}
+		} else {
+			if (direction === Enum.GAME.SPIN.CW) {
+				shadow.RotateCW()
+			} else {
+				shadow.RotateCCW()
+			}
+			this.UpdateShadow()
 		}
+
+		return !shouldRevert
 	}
 
-	DropTetromino() {
-		let tetromino = this.gameObjects.tetromino
-
+	DropTetromino(tetromino = this.gameObjects.tetromino) {
 		let safeY = -1
 		for (let y = 0; y <= this.matrix.height; y++) {
 			let hittest = this.HitTest(tetromino.x, y, tetromino)
@@ -223,28 +258,27 @@ export default class Grid extends Phaser.Group {
 		return this.matrix.getNonEmptyRows().length
 	}
 
-	ClearLines(callback) {
+	AnimateClearedLines() {
 		let clearedRows = this.matrix.getNonEmptyRows()
-
 		clearedRows.map(value => this.ToggleRow(value))
+	}
 
-		let yMod = 1, shouldIncrement = false
+	RemoveClearedLines() {
+		let clearedRows = this.matrix.getNonEmptyRows(),
+			yMod = 1, shouldIncrement = false
 		const largestAffectedRowIndex = clearedRows[clearedRows.length - 1]
 
 		for (let index = largestAffectedRowIndex; index >= 0; index--) {
 			const isClearedLine = clearedRows.indexOf(index) > -1
-			if (isClearedLine) console.log('clearing line', index)
+
 			for (let index1 = 0; index1 < this.lookups.blocks.data[index].length; index1++) {
 				const block = this.lookups.blocks.data[index][index1]
 
 				if (isClearedLine) {
-					console.log('clear block', index1, index)
 					this._ClearBlock(index1, index)
 				} else {
 					if (!!block) {
-						console.log('move block', index1, index)
 						block.y += yMod
-						console.log(block)
 					}
 				}
 			}
@@ -261,8 +295,6 @@ export default class Grid extends Phaser.Group {
 				shouldIncrement = true
 			}
 		}
-
-		this.matrix.log()
 	}
 
 	ToggleRow(index) {

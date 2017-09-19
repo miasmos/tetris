@@ -1,7 +1,8 @@
 import 'phaser-shim'
 import { PhaserGame } from '../Game'
 import Util from '../Util'
-const config = require('../../config.json')
+const config = require('../../config.json'),
+	Enum = require('../../enum.json')
 
 export default class Next extends Phaser.Group {
 	constructor(defaultTitle = "") {
@@ -31,7 +32,12 @@ export default class Next extends Phaser.Group {
 			this.remove(this.tetromino.group)
 		}
 		this.tetromino = tetromino
-		this.tetromino.group.y = this.title.height - config.game.blockSize
+
+		if (tetromino.name === Enum.GAME.TETROMINO.O) {
+			this.tetromino.group.y = this.title.height
+		} else {
+			this.tetromino.group.y = this.title.height - config.game.blockSize
+		}
 		this.tetromino.group.x = this.width / 2 - this.tetromino.group.width / 2
 		this.textContainer.add(this.tetromino.group)
 	}
