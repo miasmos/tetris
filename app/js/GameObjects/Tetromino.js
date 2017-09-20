@@ -13,8 +13,10 @@ export default class Tetromino {
 		this.name = data.name
 
 		this.group = new Phaser.Group(PhaserGame)
+		this.blocks = []
 		this._matrix = undefined
 		this.size = undefined
+		this.rendered = false
 		this.width = 0
 		this.opacity = 1
 		this.height = 0
@@ -89,23 +91,32 @@ export default class Tetromino {
 	}
 
 	_render() {
-		this._clear()
-		let curX = 0, curY = 0
+		let curX = 0, curY = 0, blockCount = 0
 		for (let index in this.matrix.data) {
 			for (let index1 in this.matrix.data[index]) {
 				if (!!this.matrix.data[index][index1]) {
-					const block = BlockFactory.Get(this.color)
-					block.active = true
+					let block
+					if (!this.rendered) {
+						block = BlockFactory.Get(this.color)	 
+						block.active = true
+						block.sprite.alpha = this.opacity
+						this.group.add(block.sprite)
+						this.blocks.push(block)
+					} else {
+						block = this.blocks[blockCount++]
+					}
+	
 					block.x = curX
 					block.y = curY
-					console.log(this.opacity)
-					block.sprite.alpha = this.opacity
-					this.group.add(block.sprite)
 				}
 				curX++
 			}
 			curY++
 			curX = 0
+		}
+
+		if (!this.rendered) {
+			this.rendered = true
 		}
 	}
 

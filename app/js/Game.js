@@ -11,6 +11,7 @@ class Game {
 			this.width = width
 			this.height = height
 			this.state = Enum.GAME.STATE.IDLE
+			this.lastState = undefined
 			this.initCallbacks = {
 				create: [],
 				preload: [],
@@ -24,8 +25,13 @@ class Game {
 
 	SetState(state) {
 		if (Object.values(Enum.GAME.STATE).indexOf(state) > -1) {
+			this.lastState = this.state
 			this.state = state
 		}
+	}
+
+	RevertState(state) {
+		this.state = this.lastState
 	}
 
 	Start() {

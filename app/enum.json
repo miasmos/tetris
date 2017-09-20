@@ -18,7 +18,6 @@
 			"PLACING_TETROMINO": 2,
 			"TETROMINO_COLLIDED": 3,
 			"LINE_CLEARED": 4,
-			"WIN": 98,
 			"LOSE": 99,
 			"PAUSE": 100
 		},

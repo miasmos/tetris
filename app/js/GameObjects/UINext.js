@@ -4,7 +4,7 @@ import Util from '../Util'
 const config = require('../../config.json'),
 	Enum = require('../../enum.json')
 
-export default class Next extends Phaser.Group {
+export default class UINext extends Phaser.Group {
 	constructor(defaultTitle = "") {
 		super(PhaserGame)
 
@@ -32,13 +32,12 @@ export default class Next extends Phaser.Group {
 			this.remove(this.tetromino.group)
 		}
 		this.tetromino = tetromino
-
+		this.tetromino.group.y = this.title.height - config.game.blockSize
 		if (tetromino.name === Enum.GAME.TETROMINO.O) {
-			this.tetromino.group.y = this.title.height
+			this.tetromino.group.x = this.width / 2 - this.tetromino.group.width / 2 - config.game.blockSize
 		} else {
-			this.tetromino.group.y = this.title.height - config.game.blockSize
+			this.tetromino.group.x = this.width / 2 - this.tetromino.group.width / 2
 		}
-		this.tetromino.group.x = this.width / 2 - this.tetromino.group.width / 2
 		this.textContainer.add(this.tetromino.group)
 	}
 }

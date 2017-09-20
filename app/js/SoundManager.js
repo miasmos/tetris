@@ -7,7 +7,7 @@ export default class SoundManager extends GameEventsConsumer {
 		super(emitter)
 		this.directory = config.game.soundDir
 		this.name = 'SoundManager'
-		this.verbose = true
+		// this.verbose = true
 		this.sounds = {}
 
 		for (var key in config.game.sounds) {

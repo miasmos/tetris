@@ -1,6 +1,7 @@
 const _ = require('lodash'),
 	Enum = require('../enum.json')
 import * as _Matrix from './Matrix'
+
 class Matrix {
 	static rotate(matrix) {	//[[1, 1, 1], [0, 1, 0]]
 		let source = _.clone(matrix.data),
@@ -85,16 +86,24 @@ class Matrix {
 		return matrix
 	}
 
-	static intersect(source, destination, x = 0, y = 0) {
+	static intersect(source, destination, x = 0, y = 0, ignoreBoundary) {
 		source = source.data
 		destination = destination.data
 
 		let sX = -1, sY = -1
 		for (let dY = y; dY < y + source.length; dY++) {
 			sY++
+
+			if ((ignoreBoundary === Enum.GAME.DIRECTION.UP || ignoreBoundary === Enum.GAME.DIRECTION.DOWN) && !(dY in destination) ) {
+				continue
+			}
+
 			for (let dX = x; dX < x + source[sY].length; dX++) {
 				sX++
-				// console.log(x, y, dX, dY, sX, sY, source[sY][sX], destination[dY][dX])
+
+				if ((ignoreBoundary === Enum.GAME.DIRECTION.LEFT || ignoreBoundary === Enum.GAME.DIRECTION.RIGHT) && dY in destination && !(dX in destination[dY])) {
+					continue
+				}
 				if (dY in destination && dX in destination[dY] && !!source[sY][sX] && !!destination[dY][dX]) {
 					return true
 				}

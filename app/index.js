@@ -7,6 +7,7 @@ import Observer from './js/Observer'
 import SoundManager from './js/SoundManager'
 import UI from './js/UI'
 import LevelManager from './js/LevelManager'
+import TimerManager from './js/TimerManager'
 import FrameTimeout from './js/FrameTimeout'
 import Util from './js/Util'
 
@@ -15,7 +16,7 @@ const config = require('./config.json'),
 	emitter = new Observer(),
 	game = new Game(config.game.width, config.game.height)
 
-let grid, Keyboard, Level, Sound,
+let grid, Keyboard, Level, Sound, Timer, paused = false, hardDrop = false,
 	shouldUseSpawnDelay = false, didMovePiece = false, didDropPiece = false, gravity = 0
 
 game.OnCreate(PhaserGame => {
@@ -25,6 +26,20 @@ game.OnCreate(PhaserGame => {
 
 game.OnUpdate(PhaserGame => {
 	gravity = Level.Gravity()
+
+	if (Keyboard.isDown(Phaser.Keyboard.P) && !Keyboard.isBuffered(Phaser.Keyboard.P)) {
+		Keyboard.buffer(Phaser.Keyboard.P)
+		
+		if (paused) {
+			game.RevertState()
+			Timer.Start()
+			paused = false
+		} else {
+			game.SetState(Enum.GAME.STATE.PAUSE)
+			Timer.Pause()
+			paused = true
+		}
+	}
 
 	if (game.state === Enum.GAME.STATE.SPAWN_TETROMINO) {
 		let spin
@@ -37,8 +52,10 @@ game.OnUpdate(PhaserGame => {
 			shouldUseSpawnDelay = true
 
 			if (Keyboard.isDown(Phaser.Keyboard.Z)) {
+				Keyboard.buffer(Phaser.Keyboard.Z)
 				spin = Enum.GAME.SPIN.CW
 			} else if (Keyboard.isDown(Phaser.Keyboard.X)) {
+				Keyboard.buffer(Phaser.Keyboard.X)
 				spin = Enum.GAME.SPIN.CCW
 			}
 
@@ -50,8 +67,7 @@ game.OnUpdate(PhaserGame => {
 				FrameTimeout.Gravity(gravity)
 				game.SetState(Enum.GAME.STATE.PLACING_TETROMINO)
 			} else {
-				game.SetState(Enum.GAME.STATE.PAUSE)
-				console.log('loser')
+				game.SetState(Enum.GAME.STATE.LOSE)
 			}
 		}
 	} else if (game.state === Enum.GAME.STATE.PLACING_TETROMINO) {
@@ -108,7 +124,7 @@ game.OnUpdate(PhaserGame => {
 				}
 			}
 			
-			if (!Keyboard.isBuffered(Phaser.Keyboard.UP) && Keyboard.isDown(Phaser.Keyboard.UP)) {
+			if (hardDrop && !Keyboard.isBuffered(Phaser.Keyboard.UP) && Keyboard.isDown(Phaser.Keyboard.UP)) {
 				Keyboard.buffer(Phaser.Keyboard.UP)
 				grid.DropTetromino()
 				didDropPiece = true
@@ -124,12 +140,13 @@ game.OnUpdate(PhaserGame => {
 
 		if (didMovePiece) {
 			if (grid.TetrominoWillCollide(Enum.GAME.DIRECTION.DOWN)) {
-				FrameTimeout.LockDelay()
+				if (!FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.LOCK_DELAY)) {
+					FrameTimeout.LockDelay()
+				}
 			}
 			didMovePiece = false
 		}
 	} else if (game.state === Enum.GAME.STATE.TETROMINO_COLLIDED) {
-		console.log(grid.AddTetrominoToGrid)
 		grid.AddTetrominoToGrid()
 			
 		if (!!grid.LinesCleared()) {
@@ -151,6 +168,8 @@ game.OnUpdate(PhaserGame => {
 			grid.RemoveClearedLines()
 			game.SetState(Enum.GAME.STATE.SPAWN_TETROMINO)
 		}
+	} else if (game.state === Enum.GAME.STATE.LOSE) {
+
 	}
 
 	PhaserGame.debug.text(PhaserGame.time.fps || '--', 2, 14, "#00ff00")
@@ -178,8 +197,14 @@ game.OnPreload(PhaserGame => {
 	UI.Next.y = grid.y + 100
 	PhaserGame.add.existing(UI.Next)
 
+	UI.Timer.x = grid.x + grid.width / 2 - UI.Timer.width / 2
+	UI.Timer.y = grid.y + grid.height + 20
+	PhaserGame.add.existing(UI.Timer)
+
 	Keyboard = new InputManager()
 	Level = new LevelManager(emitter, UI.Level)
+	Timer = new TimerManager(UI.Timer)
+	Timer.Start()
 	Sound = new SoundManager(emitter)
 	Sound.Play('BGM', true)
 })

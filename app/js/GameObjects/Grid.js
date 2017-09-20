@@ -58,39 +58,23 @@ export default class Grid extends Phaser.Group {
 			x = Math.floor(config.game.grid.width / 2 - tetromino.matrix.width / 2),
 			y = -1
 
-		if (!!this.gameObjects.shadowTetromino) {
-			this.remove(this.gameObjects.shadowTetromino, true)
-		}
 		let shadow = TetrominoFactory.Get(tetromino.name)
 
+		tetromino.x = x
+		tetromino.y = y
+		this.gameObjects.tetromino = tetromino
+		this.add(tetromino.group)
+
+		shadow.opacity = 0.5
+		this.gameObjects.shadowTetromino = shadow
+		this.UpdateShadow()
+		this.add(shadow.group)
+
 		if (typeof spin !== 'undefined') {
-			if (spin === Enum.GAME.SPIN.CW) {
-				tetromino.RotateCW()
-				shadow.RotateCW()
-			} else {
-				tetromino.RotateCCW()
-				shadow.RotateCCW()
-			}
+			this.SpinTetromino(spin)
 		}
 
-		if (tetromino.name === Enum.GAME.TETROMINO.O) {
-			y = 0
-		}
-
-		if (this.HitTest(x, y, tetromino)) {
-			return false
-		} else {
-			tetromino.x = x
-			tetromino.y = y
-			this.gameObjects.tetromino = tetromino
-			this.add(tetromino.group)
-
-			shadow.opacity = 0.5
-			this.gameObjects.shadowTetromino = shadow
-			this.UpdateShadow()
-			this.add(shadow.group)
-			return true
-		}
+		return !this.HitTest(x, y, tetromino, Enum.GAME.DIRECTION.UP)
 	}
 
 	GetTetromino() {
@@ -126,7 +110,7 @@ export default class Grid extends Phaser.Group {
 			tetromino.RotateCCW()
 		}
 
-		if (this.HitTest(tetromino.x, tetromino.y, tetromino)) {
+		if (this.HitTest(tetromino.x, tetromino.y, tetromino, Enum.GAME.DIRECTION.UP)) {
 			shouldRevert = true
 		}
 
@@ -168,7 +152,7 @@ export default class Grid extends Phaser.Group {
 			}
 		}
 
-		if (safeY >= 0) {
+		if (safeY >= -1) {
 			tetromino.y = safeY
 		}
 	}
@@ -195,38 +179,21 @@ export default class Grid extends Phaser.Group {
 				break
 		}
 
-		return this.HitTest(update.x, update.y, tetromino)
-	}
-
-	HitTest(x, y, tetromino, direction) {
-		let tetrominoMatrix
-
-		switch(direction) {
-			case Enum.GAME.DIRECTION.RIGHT:
-				x += tetromino.matrix.width - 1
-				tetrominoMatrix = new Matrix(Util.Matrix.edge(tetromino.matrix, direction))
-				break
-			case Enum.GAME.DIRECTION.DOWN:
-				y += tetromino.matrix.height - 1
-				tetrominoMatrix = new Matrix(Util.Matrix.edge(tetromino.matrix, direction))
-				break
-			case Enum.GAME.DIRECTION.LEFT:
-			case Enum.GAME.DIRECTION.UP:
-				tetrominoMatrix = new Matrix(Util.Matrix.edge(tetromino.matrix, direction))
-				break
-			default:
-				tetrominoMatrix = tetromino.matrix
+		let ignoreBoundary
+		if (tetromino.y <= 0) {
+			ignoreBoundary = Enum.GAME.DIRECTION.UP
 		}
 
-		return Util.Matrix.intersect(tetrominoMatrix, this.matrix, x, y)
+		return this.HitTest(update.x, update.y, tetromino, ignoreBoundary)
+	}
+
+	HitTest(x, y, tetromino, ignoreBoundary) {
+		return Util.Matrix.intersect(tetromino.matrix, this.matrix, x, y, ignoreBoundary)
 	}
 
 	AddTetrominoToGrid() {
 		let tetromino = this.gameObjects.tetromino,
-			world = {
-				x: tetromino.gridX,
-				y: tetromino.gridY
-			},
+			world,
 			local = {
 				x: tetromino.x,
 				y: tetromino.y
@@ -252,6 +219,11 @@ export default class Grid extends Phaser.Group {
 
 		this.remove(tetromino.group, true)
 		this.gameObjects.tetromino = undefined
+
+		if (!!this.gameObjects.shadowTetromino) {
+			this.remove(this.gameObjects.shadowTetromino.group, true)
+			this.gameObjects.shadowTetromino = undefined
+		}
 	}
 
 	LinesCleared() {

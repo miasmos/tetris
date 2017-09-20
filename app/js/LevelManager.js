@@ -7,7 +7,7 @@ export default class LevelManager extends GameEventsConsumer {
 		super(emitter)
 		this.ui = ui
 		this.name = 'LevelManager'
-		this.verbose = true
+		// this.verbose = true
 		this.level = 0
 		this.Reset()
 	}
