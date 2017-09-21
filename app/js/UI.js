@@ -12,7 +12,7 @@ class _UI {
 	}
 
 	Init() {
-		this.Lines = new UINumericText('LINES')
+		// this.Lines = new UINumericText('LINES')
 		this.Level = new UINumericText('LEVEL', 1)
 		this.Score = new UINumericText('SCORE')
 		this.Next = new UINext('NEXT')

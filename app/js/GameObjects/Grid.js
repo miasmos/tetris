@@ -1,5 +1,5 @@
 import 'phaser-shim'
-import { PhaserGame } from '../Game'
+import { PhaserGame } from '../PhaserGame'
 import BlockFactory from '../BlockFactory'
 import TetrominoFactory from '../TetrominoFactory'
 import Util from '../Util'

@@ -1,6 +1,6 @@
 import 'phaser-shim'
 import BlockFactory from '../BlockFactory'
-import { PhaserGame } from '../Game'
+import { PhaserGame } from '../PhaserGame'
 import Util from '../Util'
 const config = require('../../config.json'),
 	Enum = require('../../enum.json')

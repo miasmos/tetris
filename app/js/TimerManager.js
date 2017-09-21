@@ -1,5 +1,5 @@
 import 'phaser-shim'
-import { PhaserGame } from './Game'
+import { PhaserGame } from './PhaserGame'
 const Enum = require('../enum.json'),
 	config = require('../config.json')
 
@@ -13,7 +13,7 @@ export default class TimerManager {
 
 	Start() {
 		if (!this.running) {
-			this.timer = setInterval(this.Tick.bind(this), 1000)
+			this.timer = setInterval(this.Tick.bind(this), 10)
 			this.running = true
 		}
 	}
@@ -31,25 +31,25 @@ export default class TimerManager {
 	}
 
 	Tick() {
-		if (++this.seconds === 60) {
+		if (++this.milliseconds === 100) {
+			this.seconds++
+			this.milliseconds = 0
+		}
+		if (this.seconds === 60) {
 			this.minutes++
 			this.seconds = 0
 		}
 		if (this.minutes === 60) {
-			this.hours++
-			this.minutes = 0
-		}
-		if (this.hours === 60) {
-			this.hours = 59
+			this.minutes = 59
 		}
 
-		this.ui.SetTime(this.hours, this.minutes, this.seconds)
+		this.ui.SetTime(this.minutes, this.seconds, this.milliseconds)
 	}
 
 	Reset() {
+		this.milliseconds = 0
 		this.seconds = 0
 		this.minutes = 0
-		this.hours = 0
 		this.ui.SetTime(0, 0, 0)
 	}
 }

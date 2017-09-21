@@ -1,5 +1,5 @@
 import 'phaser-shim'
-import { PhaserGame } from '../Game'
+import { PhaserGame } from '../PhaserGame'
 const config = require('../../config.json')
 
 export default class Block {

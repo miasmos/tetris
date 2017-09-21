@@ -1,5 +1,5 @@
 import 'phaser-shim'
-import { PhaserGame } from './Game'
+import { PhaserGame } from './PhaserGame'
 
 export default class InputManager {
 	constructor() {

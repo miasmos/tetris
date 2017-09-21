@@ -1,6 +1,7 @@
 import 'phaser-shim'
-import { PhaserGame } from '../Game'
+import { PhaserGame } from '../PhaserGame'
 import Util from '../Util'
+import RegularText from './RegularText'
 const config = require('../../config.json'),
 	Enum = require('../../enum.json')
 
@@ -11,11 +12,8 @@ export default class UINext extends Phaser.Group {
 		this.textContainer = new Phaser.Group(PhaserGame)
 		this.add(this.textContainer)
 
-		this.title = new Phaser.Text(PhaserGame)
+		this.title = new RegularText(PhaserGame)
 		this.title.text = defaultTitle
-		this.title.fontWeight = "normal"
-		this.title.fontSize = 12
-		this.title.addColor(Util.Color.CSSHex(config.game.color.primary), 0)
 		this.textContainer.add(this.title)
 
 		this.tetromino = undefined

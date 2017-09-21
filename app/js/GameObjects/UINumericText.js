@@ -1,6 +1,7 @@
 import 'phaser-shim'
-import { PhaserGame } from '../Game'
+import { PhaserGame } from '../PhaserGame'
 import Util from '../Util'
+import RegularText from './RegularText'
 const config = require('../../config.json')
 
 export default class UINumericText extends Phaser.Group {
@@ -10,17 +11,12 @@ export default class UINumericText extends Phaser.Group {
 		this.textContainer = new Phaser.Group(PhaserGame)
 		this.add(this.textContainer)
 
-		this.title = new Phaser.Text(PhaserGame)
+		this.title = new RegularText(PhaserGame)
 		this.title.text = defaultTitle
-		this.title.fontWeight = "normal"
-		this.title.fontSize = 12
-		this.title.addColor(Util.Color.CSSHex(config.game.color.primary), 0)
 		this.textContainer.add(this.title)
 
-		this.body = new Phaser.Text(PhaserGame)
-		this.body.fontWeight = "normal"
+		this.body = new RegularText(PhaserGame)
 		this.body.fontSize = 16
-		this.body.addColor(Util.Color.CSSHex(config.game.color.primary), 0)
 		this.textContainer.add(this.body)
 
 		this.body.y = this.title.height

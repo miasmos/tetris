@@ -1,6 +1,6 @@
 {
 	"game": {
-		"width": 800,
+		"width": 600,
 		"height": 600,
 		"fps": 60,
 		"borderSize": 2,
@@ -12,6 +12,10 @@
 		"grid": {
 			"width": 10,
 			"height": 20
+		},
+		"font": {
+			"title": "Anton",
+			"text": "Source Code Pro"
 		},
 		"soundDir": "assets/sfx/copyright",
 		"sounds": {
