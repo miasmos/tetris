@@ -1,11 +1,15 @@
 TODO  
 keymap tutorial
-implement combo system
-implement score system
-add sound for placing a piece
 add visual feedback for lock timeout (fading tetromino)
+leaderboard / name input at the win state
 key rebinding?
 
+test win condition (level 999)
+test GM rank
+test S9 (last) grade
+test transition from level ~99 to ~00
+test disable of shadow after level 100
+
 bugs
-lock timeout not being reset when a piece is moved to a position that allows vertical descent
-loss state not triggering when the piece can't move onto the field
+collide not triggering at y = 0
+fix game not displaying the first tetromino after reset

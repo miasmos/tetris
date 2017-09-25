@@ -8,6 +8,7 @@ import SoundManager from '../SoundManager'
 import UI from '../UI'
 import LevelManager from '../LevelManager'
 import TimerManager from '../TimerManager'
+import ScoreManager from '../ScoreManager'
 import FrameTimeout from '../FrameTimeout'
 import RegularText from '../GameObjects/RegularText'
 import Util from '../Util'
@@ -22,6 +23,7 @@ export default class Game {
 		this.keyboard = new InputManager()
 		this.level = new LevelManager(this.emitter, UI.Level)
 		this.timer = new TimerManager(UI.Timer)
+		this.score = new ScoreManager(this.emitter, UI.Score, UI.Grade, this.level)
 		this.sound = new SoundManager(this.emitter)
 
 		this.groups = {
@@ -35,21 +37,25 @@ export default class Game {
 		let grid = new Grid()
 		this.groups.game.add(grid)
 
-		UI.Score.x = grid.x - 100
-		UI.Score.y = grid.y + 100
+		UI.Score.x = grid.x - 65
+		UI.Score.y = grid.y + 200
 		this.groups.game.add(UI.Score)
 	
-		UI.Level.x = grid.x - 97
-		UI.Level.y = UI.Score.y + 60
+		UI.Level.x = grid.x - 55
+		UI.Level.y = grid.y + grid.height - UI.Level.height
 		this.groups.game.add(UI.Level)
 	
-		UI.Next.x = grid.x + grid.width + 100 - UI.Next.width
-		UI.Next.y = grid.y + 100
+		UI.Next.x = grid.x
+		UI.Next.y = grid.y - UI.Next.height - 50
 		this.groups.game.add(UI.Next)
 	
 		UI.Timer.x = grid.x + grid.width / 2 - UI.Timer.width / 2 - 2
-		UI.Timer.y = grid.y + grid.height + 20
+		UI.Timer.y = grid.y + grid.height + 10
 		this.groups.game.add(UI.Timer)
+
+		UI.Grade.x = grid.x - UI.Grade.width - 15
+		UI.Grade.y = grid.y
+		this.groups.game.add(UI.Grade)
 		//end set up game ui
 
 		//set up message ui
@@ -67,7 +73,7 @@ export default class Game {
 	}
 
 	update() {
-		let { state, emitter, grid, keyboard, level, sound, timer, paused, hardDrop, shouldUseSpawnDelay, didDropPiece, didMovePiece, gravity, engine } = this
+		let { state, emitter, grid, keyboard, level, score, sound, timer, paused, hardDrop, shouldUseSpawnDelay, didDropPiece, didMovePiece, gravity, engine } = this
 		gravity = level.Gravity()
 	
 		if (keyboard.isDown(Phaser.Keyboard.P) && !keyboard.isBuffered(Phaser.Keyboard.P)) {
@@ -81,9 +87,20 @@ export default class Game {
 				this.ShowMessage('PAUSE')
 			}
 		}
+
+		if ((timer.IsBefore(4, 15) && level.level >= 300 && score.score >= 12000) ||
+			(timer.IsBefore(7, 30) && level.level >= 500 && score.score >= 40000) ||
+			(timer.IsBefore(13, 30) && level.level === 999 && score.score >= 126000)) {
+				score.SetGM()
+			}
 	
 		if (state === Enum.GAME.STATE.SPAWN_TETROMINO) {
 			let spin
+			this.soft = 0
+
+			if (this.level.level > 100) {
+				grid.DisableShadow()
+			}
 	
 			if (!FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.SPAWN_DELAY) && shouldUseSpawnDelay) {
 				FrameTimeout.SpawnDelay()
@@ -128,6 +145,10 @@ export default class Game {
 					grid.MoveTetromino(0, 1)
 					didMovePiece = true
 				}
+				//  else {
+				// 	this.SetState(Enum.GAME.STATE.LOSE)
+				// 	return
+				// }
 			}
 	
 			if (!didDropPiece) {
@@ -177,40 +198,67 @@ export default class Game {
 						didMovePiece = true
 					}
 				}
+
+				if (keyboard.isBuffered(Phaser.Keyboard.DOWN) && keyboard.isDown(Phaser.Keyboard.DOWN) && !FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.LOCK_DELAY)) {
+					this.soft += 1
+				}
 			}
 	
 			if (didMovePiece) {
 				if (grid.TetrominoWillCollide(Enum.GAME.DIRECTION.DOWN)) {
 					if (!FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.LOCK_DELAY)) {
+						emitter.emit(Enum.GAME.EVENTS.PLACE)
 						FrameTimeout.LockDelay()
+					}
+				} else {
+					if (FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.LOCK_DELAY)) {
+						FrameTimeout.Clear(Enum.GAME.FRAME_TIMEOUT_TYPES.LOCK_DELAY)
 					}
 				}
 				didMovePiece = false
 			}
 		} else if (state === Enum.GAME.STATE.TETROMINO_COLLIDED) {
 			grid.AddTetrominoToGrid()
-				
-			if (!!grid.LinesCleared()) {
+
+			const linesCleared = grid.LinesCleared()
+			if (!!linesCleared) {
+				emitter.emit(Enum.GAME.EVENTS.LOCK, [linesCleared, this.soft, grid.IsEmpty()])
 				this.SetState(Enum.GAME.STATE.LINE_CLEARED)
 			} else {
+				emitter.emit(Enum.GAME.EVENTS.LOCK, [0, this.soft, grid.IsEmpty()])
 				this.SetState(Enum.GAME.STATE.SPAWN_TETROMINO)
 			}
 		} else if (state === Enum.GAME.STATE.LINE_CLEARED) {
-			const numLinesCleared = grid.LinesCleared()
+			const linesCleared = grid.LinesCleared()
 	
 			if (!FrameTimeout.IsSet(Enum.GAME.FRAME_TIMEOUT_TYPES.LINE_CLEAR_DELAY)) {
 				FrameTimeout.LineClearDelay()
 				grid.AnimateClearedLines()
-				emitter.emit(Enum.GAME.EVENTS.LINE, [numLinesCleared])
+				emitter.emit(Enum.GAME.EVENTS.LINE, [linesCleared, this.soft])
 			}
 	
 			if (FrameTimeout.IsComplete(Enum.GAME.FRAME_TIMEOUT_TYPES.LINE_CLEAR_DELAY)) {
 				grid.RemoveClearedLines()
-				this.SetState(Enum.GAME.STATE.SPAWN_TETROMINO)
+
+				if (this.level.level === 999) {
+					this.SetState(Enum.GAME.STATE.WIN)
+				} else {
+					this.SetState(Enum.GAME.STATE.SPAWN_TETROMINO)
+				}
 			}
 		} else if (state === Enum.GAME.STATE.LOSE) {
 			this.ShowMessage('GAME OVER')
 			this.Pause(false)
+			emitter.emit(Enum.GAME.EVENTS.LOSE)
+
+			if (!keyboard.isBuffered(Phaser.Keyboard.SPACEBAR) && keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+				keyboard.buffer(Phaser.Keyboard.SPACEBAR)
+				PhaserGame.state.start(Enum.APP.STATE.MENU)
+			}
+		} else if (state === Enum.GAME.STATE.WIN) {
+			this.ShowMessage('GAME OVER')
+			this.Pause(false)
+			emitter.emit(Enum.GAME.EVENTS.WIN)
 
 			if (!keyboard.isBuffered(Phaser.Keyboard.SPACEBAR) && keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
 				keyboard.buffer(Phaser.Keyboard.SPACEBAR)
@@ -218,7 +266,7 @@ export default class Game {
 			}
 		}
 	
-		PhaserGame.debug.text(PhaserGame.time.fps || '--', 2, 14, "#00ff00")
+		// PhaserGame.debug.text(PhaserGame.time.fps || '--', 2, 14, "#00ff00")
 	}
 
 	focus() {
@@ -237,6 +285,7 @@ export default class Game {
 			this.timer.Pause()
 			this.groups.game.alpha = 0.2
 			this.paused = true
+			this.emitter.emit(Enum.GAME.EVENTS.PAUSE)
 		}
 	}
 
@@ -248,6 +297,7 @@ export default class Game {
 			this.timer.Start()
 			this.groups.game.alpha = 1
 			this.paused = false
+			this.emitter.emit(Enum.GAME.EVENTS.UNPAUSE)
 		}
 	}
 
@@ -265,6 +315,7 @@ export default class Game {
 		this.didDropPiece = false
 		this.emitter = new Observer()
 		this.gravity = 0
+		this.soft = 0
 	}
 
 	SetState(state) {

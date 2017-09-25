@@ -18,12 +18,19 @@
 			"PLACING_TETROMINO": 2,
 			"TETROMINO_COLLIDED": 3,
 			"LINE_CLEARED": 4,
+			"WIN": 98,
 			"LOSE": 99,
 			"PAUSE": 100
 		},
 		"EVENTS": {
 			"SPAWN": 0,
-			"LINE": 1
+			"LINE": 1,
+			"PLACE": 2,
+			"LOCK": 3,
+			"PAUSE": 4,
+			"UNPAUSE": 5,
+			"WIN": 6,
+			"LOSE": 7
 		},
 		"DIRECTION": {
 			"UP": 0,

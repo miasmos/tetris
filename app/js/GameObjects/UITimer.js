@@ -9,27 +9,33 @@ export default class UITimer extends Phaser.Group {
 	constructor(defaultTitle = "00") {
 		super(PhaserGame)
 
+		this.fontSize = 30
 		this.hours = new RegularText(PhaserGame)
 		this.hours.text = defaultTitle
+		this.hours.fontSize = this.fontSize
 		this.add(this.hours)
 
 		this.colon1 = new RegularText(PhaserGame)
 		this.colon1.text = ":"
+		this.colon1.fontSize = this.fontSize
 		this.add(this.colon1)
 		this.colon1.x = this.hours.x + this.hours.width + 3
 
 		this.minutes = new RegularText(PhaserGame)
 		this.minutes.text = defaultTitle
+		this.minutes.fontSize = this.fontSize
 		this.add(this.minutes)
 		this.minutes.x = this.colon1.left + this.colon1.width + 3
 
 		this.colon2 = new RegularText(PhaserGame)
 		this.colon2.text = ":"
+		this.colon2.fontSize = this.fontSize
 		this.add(this.colon2)
 		this.colon2.x = this.minutes.left + this.minutes.width + 3
 
 		this.seconds = new RegularText(PhaserGame)
 		this.seconds.text = defaultTitle
+		this.seconds.fontSize = this.fontSize
 		this.add(this.seconds)
 		this.seconds.x = this.colon2.left + this.colon2.width + 3
 	}

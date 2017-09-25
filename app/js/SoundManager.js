@@ -55,11 +55,33 @@ export default class SoundManager extends GameEventsConsumer {
 		}
 	}
 
+	onPlace() {
+		super.onPlace()
+		this.Play('PLACED')
+	}
+
+	onPause() {
+		super.onPause()
+		this.Pause('BGM')
+	}
+
+	onUnpause() {
+		super.onUnpause()
+		this.Play('BGM')
+	}
+
 	Play(name, loop = false) {
 		if (name in this.sounds) {
 			const sound = this.sounds[name]
 			sound.play()
 			sound.loop = !!loop
+		}
+	}
+
+	Pause(name) {
+		if (name in this.sounds) {
+			const sound = this.sounds[name]
+			sound.pause()
 		}
 	}
 }

@@ -1,6 +1,8 @@
 import UINumericText from './GameObjects/UINumericText'
 import UINext from './GameObjects/UINext'
+import UILevel from './GameObjects/UILevel'
 import UITimer from './GameObjects/UITimer'
+import UIGradeText from './GameObjects/UIGradeText'
 
 class _UI {
 	constructor() {
@@ -9,14 +11,15 @@ class _UI {
 		this._score = undefined
 		this._next = undefined
 		this._timer = undefined
+		this._grade = undefined
 	}
 
 	Init() {
-		// this.Lines = new UINumericText('LINES')
-		this.Level = new UINumericText('LEVEL', 1)
-		this.Score = new UINumericText('SCORE')
+		this.Level = new UILevel()
+		this.Score = new UINumericText('POINTS')
 		this.Next = new UINext('NEXT')
 		this.Timer = new UITimer()
+		this.Grade = new UIGradeText()
 	}
 
 	get Lines() {
@@ -57,6 +60,14 @@ class _UI {
 
 	set Timer(value) {
 		this._timer = value
+	}
+
+	get Grade() {
+		return this._grade
+	}
+
+	set Grade(value) {
+		this._grade = value
 	}
 }
 

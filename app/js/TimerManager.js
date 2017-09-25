@@ -11,6 +11,12 @@ export default class TimerManager {
 		this.running = false
 	}
 
+	IsBefore(minutes, seconds = 0, milliseconds = 0) {
+		return this.minutes < minutes || 
+			this.minutes === minutes && this.seconds < seconds || 
+			this.minutes === minutes && this.seconds === seconds && this.milliseconds < milliseconds
+	}
+
 	Start() {
 		if (!this.running) {
 			this.timer = setInterval(this.Tick.bind(this), 10)

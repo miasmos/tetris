@@ -22,6 +22,7 @@ export default class Grid extends Phaser.Group {
 		this.borderGraphic.drawRect(-borderSize, -borderSize, gridWidth + borderSize * 2, gridHeight + borderSize * 2)
 		this.borderGraphic.endFill()
 		this.add(this.borderGraphic)
+		this.shadow = true
 
 		this.fillGraphic = new Phaser.Graphics(PhaserGame)
 		this.fillGraphic.beginFill(Util.Color.Hex(config.game.color.background), 1)
@@ -58,17 +59,22 @@ export default class Grid extends Phaser.Group {
 			x = Math.floor(config.game.grid.width / 2 - tetromino.matrix.width / 2),
 			y = -1
 
-		let shadow = TetrominoFactory.Get(tetromino.name)
+		let shadow
+		if (this.shadow) {
+			shadow = TetrominoFactory.Get(tetromino.name)
+		}
 
 		tetromino.x = x
 		tetromino.y = y
 		this.gameObjects.tetromino = tetromino
 		this.add(tetromino.group)
 
-		shadow.opacity = 0.5
-		this.gameObjects.shadowTetromino = shadow
-		this.UpdateShadow()
-		this.add(shadow.group)
+		if (this.shadow) {
+			shadow.opacity = 0.5
+			this.gameObjects.shadowTetromino = shadow
+			this.UpdateShadow()
+			this.add(shadow.group)
+		}
 
 		if (typeof spin !== 'undefined') {
 			this.SpinTetromino(spin)
@@ -91,12 +97,14 @@ export default class Grid extends Phaser.Group {
 	}
 
 	UpdateShadow() {
-		let tetromino = this.gameObjects.tetromino,
-			shadow = this.gameObjects.shadowTetromino
+		if (this.shadow) {
+			let tetromino = this.gameObjects.tetromino,
+				shadow = this.gameObjects.shadowTetromino
 
-		shadow.x = tetromino.x
-		shadow.y = tetromino.y
-		this.DropTetromino(shadow)
+			shadow.x = tetromino.x
+			shadow.y = tetromino.y
+			this.DropTetromino(shadow)
+		}
 	}
 
 	SpinTetromino(direction = Enum.GAME.SPIN.CW) {
@@ -144,7 +152,7 @@ export default class Grid extends Phaser.Group {
 
 	DropTetromino(tetromino = this.gameObjects.tetromino) {
 		let safeY = -1
-		for (let y = 0; y <= this.matrix.height; y++) {
+		for (let y = tetromino.y; y <= this.matrix.height; y++) {
 			let hittest = this.HitTest(tetromino.x, y, tetromino)
 			if (!!hittest) {
 				safeY = y - 1
@@ -274,6 +282,18 @@ export default class Grid extends Phaser.Group {
 			const block = this.lookups.blocks.data[index][index1]
 			block.active = !block.active
 		}
+	}
+
+	DisableShadow() {
+		this.shadow = false
+	}
+
+	EnableShadow() {
+		this.shadow = true
+	}
+
+	IsEmpty() {
+		return this.matrix.isEmpty()
 	}
 
 	_SpawnBlock(x, y, color, exists=true) {

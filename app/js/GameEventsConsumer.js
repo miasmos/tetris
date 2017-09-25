@@ -7,6 +7,11 @@ export default class GameEventsConsumer {
 		this.verbose = false
 		emitter.on(Enum.GAME.EVENTS.LINE, this.onLine.bind(this))
 		emitter.on(Enum.GAME.EVENTS.SPAWN, this.onSpawn.bind(this))
+		emitter.on(Enum.GAME.EVENTS.PLACE, this.onPlace.bind(this))
+		emitter.on(Enum.GAME.EVENTS.LOCK, this.onLock.bind(this))
+		emitter.on(Enum.GAME.EVENTS.PAUSE, this.onPause.bind(this))
+		emitter.on(Enum.GAME.EVENTS.UNPAUSE, this.onUnpause.bind(this))
+		emitter.on(Enum.GAME.EVENTS.WIN, this.onWin.bind(this))
 	}
 
 	onLine(linesCleared) {
@@ -15,6 +20,26 @@ export default class GameEventsConsumer {
 
 	onSpawn(type) {
 		this.log(`onSpawn ${type}`)
+	}
+
+	onPlace() {
+		this.log(`onPlace`)
+	}
+
+	onLock(linesCleared) {
+		this.log(`onLock`)
+	}
+
+	onPause() {
+		this.log(`Pause`)
+	}
+
+	onUnpause() {
+		this.log(`Unpause`)
+	}
+
+	onWin() {
+		this.log(`Win`)
 	}
 
 	log(str) {

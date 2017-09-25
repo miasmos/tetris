@@ -28,6 +28,22 @@ export default class LevelManager extends GameEventsConsumer {
 
 	onLine(linesCleared) {
 		super.onLine(linesCleared)
+		if (this.level >= 999) {
+			return
+		}
+
+		const stopModifier = this.ui.nextLevel === 999 ? 2 : 1,
+			levelStop = this.ui.nextLevel - stopModifier
+
+		if (this.level === levelStop) {
+			this.Add(1)
+			return
+		} else if (this.level + linesCleared >= levelStop) {
+			this.SetNumber(levelStop)
+			this.level = levelStop
+			return
+		}
+
 		this.Add(linesCleared)
 	}
 

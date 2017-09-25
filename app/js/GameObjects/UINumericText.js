@@ -54,8 +54,9 @@ export default class UINumericText extends Phaser.Group {
 
 	_setNumberText(value) {
 		if (typeof value === 'number') {
+			this.body.x = 0
 			this.body.text = value.toString()
-			this.body.x = this.textContainer.width / 2 - this.body.width / 2
+			this.body.x = this.textContainer.width - this.body.width
 		}
 	}
 

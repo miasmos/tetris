@@ -9,12 +9,9 @@ const config = require('../../config.json'),
 	Enum = require('../../enum.json')
 
 export default class TitleScreen {
-	constructor() {
-		this.keyboard = new InputManager()
-	}
-
 	create() {
 		this.container = new Phaser.Group(PhaserGame)
+		this.keyboard = new InputManager()
 
 		this.title = new TitleText(PhaserGame)
 		this.title.text = "TETRIS"

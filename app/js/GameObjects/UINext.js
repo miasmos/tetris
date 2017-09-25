@@ -19,6 +19,7 @@ export default class UINext extends Phaser.Group {
 		this.tetromino = undefined
 
 		this.title.x = this.textContainer.width / 2 - this.title.width / 2
+		this.title.y = config.game.blockSize * 2 + 8
 	}
 
 	SetTitle(text) {
@@ -30,11 +31,12 @@ export default class UINext extends Phaser.Group {
 			this.remove(this.tetromino.group)
 		}
 		this.tetromino = tetromino
-		this.tetromino.group.y = this.title.height - config.game.blockSize
+		this.tetromino.group.y = 0
+		this.tetromino.group.x = this.title.x + this.title.width + 20
 		if (tetromino.name === Enum.GAME.TETROMINO.O) {
-			this.tetromino.group.x = this.width / 2 - this.tetromino.group.width / 2 - config.game.blockSize
-		} else {
-			this.tetromino.group.x = this.width / 2 - this.tetromino.group.width / 2
+			this.tetromino.group.x -= config.game.blockSize
+		} else if (tetromino.name === Enum.GAME.TETROMINO.I) {
+			this.tetromino.group.y += config.game.blockSize
 		}
 		this.textContainer.add(this.tetromino.group)
 	}

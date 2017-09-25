@@ -57,6 +57,15 @@ export default class Matrix {
 		}
 	}
 
+	isEmpty() {
+		for (let index in this.data) {
+			if (this.data[index].filter(value => {return value === 1}).length) {
+				return false
+			}
+		}
+		return true
+	}
+
 	get data() {
 		return this._data
 	}
