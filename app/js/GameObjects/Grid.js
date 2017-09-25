@@ -151,8 +151,10 @@ export default class Grid extends Phaser.Group {
 	}
 
 	DropTetromino(tetromino = this.gameObjects.tetromino) {
-		let safeY = -1
-		for (let y = tetromino.y; y <= this.matrix.height; y++) {
+		let safeY = -1,
+			startY = tetromino.y < 0 ? 0 : tetromino.y
+
+		for (let y = startY; y <= this.matrix.height; y++) {
 			let hittest = this.HitTest(tetromino.x, y, tetromino)
 			if (!!hittest) {
 				safeY = y - 1
