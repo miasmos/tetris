@@ -1,6 +1,8 @@
 import GameEventsConsumer from './GameEventsConsumer'
+import BGM from './BGM'
 const config = require('../config.json'),
-	Enum = require('../enum.json')
+	Enum = require('../enum.json'),
+	song = require('../bgm.json')
 
 export default class SoundManager extends GameEventsConsumer {
 	constructor(emitter) {
@@ -9,6 +11,7 @@ export default class SoundManager extends GameEventsConsumer {
 		this.name = 'SoundManager'
 		// this.verbose = true
 		this.sounds = {}
+		this.bgm = new BGM(song)
 
 		for (var key in config.game.sounds) {
 			const filename = config.game.sounds[key]
@@ -62,15 +65,19 @@ export default class SoundManager extends GameEventsConsumer {
 
 	onPause() {
 		super.onPause()
-		this.Pause('BGM')
+		this.bgm.Pause()
 	}
 
 	onUnpause() {
 		super.onUnpause()
-		this.Play('BGM')
+		this.bgm.Play()
 	}
 
 	Play(name, loop = false) {
+		if (name.toLowerCase() === 'bgm') {
+			this.bgm.Play()
+			return
+		}
 		if (name in this.sounds) {
 			const sound = this.sounds[name]
 			sound.play()
@@ -79,6 +86,10 @@ export default class SoundManager extends GameEventsConsumer {
 	}
 
 	Pause(name) {
+		if (name.toLowerCase() === 'bgm') {
+			this.bgm.Pause()
+			return
+		}
 		if (name in this.sounds) {
 			const sound = this.sounds[name]
 			sound.pause()

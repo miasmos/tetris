@@ -19,7 +19,6 @@
 		},
 		"soundDir": "assets/sfx/copyright",
 		"sounds": {
-			"BGM": "bgm_01.mp3",
 			"LINE_CLEAR": "Jq9_25.mp3",
 			"SPAWN_I": "Jq9_03.mp3",
 			"SPAWN_J": "Jq9_04.mp3",

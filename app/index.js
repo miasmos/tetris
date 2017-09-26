@@ -9,6 +9,7 @@ let game, menu
 
 engine.on('create', PhaserGame => {
 	PhaserGame.time.advancedTiming = true
+	PhaserGame.stage.disableVisibilityChange = true
 	game = new Game()
 	menu = new TitleScreen()
 
